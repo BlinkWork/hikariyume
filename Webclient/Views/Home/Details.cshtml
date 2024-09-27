@@ -1,0 +1,131 @@
+﻿@{
+    ViewData["Title"] = "Detail product";
+}
+<style>
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+    }
+    .navbar-brand {
+        font-weight: bold;
+    }
+    .navbar-brand span {
+        color: #dc3545;
+    }
+    .product-image {
+        max-height: 400px;
+        object-fit: cover;
+    }
+    .price {
+        font-size: 1.5rem;
+        color: #dc3545;
+    }
+    .btn-add-to-cart {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+    .btn-add-to-cart:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+    .related-product-img {
+        height: 150px;
+        object-fit: cover;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-6">
+        <img src="/placeholder.svg?height=400&width=400" alt="Ceramic Rice Bowl" class="img-fluid rounded product-image">
+    </div>
+    <div class="col-md-6">
+        <h1 class="mb-4">Ceramic Rice Bowl</h1>
+        <p class="price mb-3">$24.99</p>
+        <p class="mb-4">Elevate your dining experience with our authentic Japanese ceramic rice bowl. Crafted by skilled artisans, this bowl combines traditional design with modern functionality.</p>
+        <div class="mb-4">
+            <h5>Features:</h5>
+            <ul>
+                <li>Made from high-quality ceramic</li>
+                <li>Microwave and dishwasher safe</li>
+                <li>Perfect size for individual servings</li>
+                <li>Available in multiple colors</li>
+            </ul>
+        </div>
+        <div class="mb-4">
+            <label for="quantity" class="form-label">Quantity:</label>
+            <select class="form-select w-25" id="quantity">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+        <button class="btn btn-add-to-cart btn-lg">Add to Cart</button>
+    </div>
+</div>
+
+<section class="mt-5">
+    <h2 class="mb-4">Product Details</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <h5>Dimensions</h5>
+            <p>Diameter: 5 inches (12.7 cm)<br>Height: 2.5 inches (6.35 cm)</p>
+            <h5>Materials</h5>
+            <p>High-quality ceramic with a glossy finish</p>
+        </div>
+        <div class="col-md-6">
+            <h5>Care Instructions</h5>
+            <p>Dishwasher safe, but hand washing is recommended for longevity. Microwave safe for reheating.</p>
+            <h5>Origin</h5>
+            <p>Handcrafted in Arita, Japan, known for its centuries-old pottery tradition.</p>
+        </div>
+    </div>
+</section>
+
+<section class="mt-5">
+    <h2 class="mb-4">Related Products</h2>
+    <div class="row">
+        <div class="col-6 col-md-3 mb-4">
+            <div class="card">
+                <img src="/placeholder.svg?height=150&width=150" class="card-img-top related-product-img" alt="Sakura Plate Set">
+                <div class="card-body">
+                    <h5 class="card-title">Sakura Plate Set</h5>
+                    <p class="card-text">$49.99</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 mb-4">
+            <div class="card">
+                <img src="/placeholder.svg?height=150&width=150" class="card-img-top related-product-img" alt="Matcha Tea Cup">
+                <div class="card-body">
+                    <h5 class="card-title">Matcha Tea Cup</h5>
+                    <p class="card-text">$19.99</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 mb-4">
+            <div class="card">
+                <img src="/placeholder.svg?height=150&width=150" class="card-img-top related-product-img" alt="Sushi Serving Platter">
+                <div class="card-body">
+                    <h5 class="card-title">Sushi Serving Platter</h5>
+                    <p class="card-text">$39.99</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 mb-4">
+            <div class="card">
+                <img src="/placeholder.svg?height=150&width=150" class="card-img-top related-product-img" alt="Sake Cup Duo">
+                <div class="card-body">
+                    <h5 class="card-title">Sake Cup Duo</h5>
+                    <p class="card-text">$29.99</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

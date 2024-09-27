@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Hikari Yumi - Japanese Tableware";
+}
+
+<style>
+    .bg-custom {
+        background-color: #f8f9fa;
+    }
+
+    .text-custom {
+        color: #212529;
+    }
+
+    .hero-section {
+        background-image: url('/placeholder.svg?height=400&width=1200');
+        background-size: cover;
+        background-position: center;
+    }
+
+    .product-img {
+        height: 12rem;
+        object-fit: cover;
+    }
+
+    .bg-dark-custom {
+        background-color: #343a40;
+    }
+</style>
+<!-- Hero Section -->
+<section class="hero-section py-5 text-center text-white">
+    <div class="container">
+        <h1 class="display-5 fw-bold">Elevate Your Dining Experience</h1>
+        <p class="lead mb-4">Discover the beauty of authentic Japanese tableware</p>
+        <a href="#" class="btn btn-danger btn-lg">Shop Now</a>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Featured Products</h2>
+        <div class="row g-4">
+            <!-- Product 1 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm">
+                    <img src="/placeholder.svg?height=300&width=300" class="card-img-top product-img" alt="Ceramic Rice Bowl">
+                    <div class="card-body">
+                        <h5 class="card-title">Ceramic Rice Bowl</h5>
+                        <p class="text-danger">$24.99</p>
+                        <a href="#" class="btn btn-dark w-100">Add to Cart</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Product 2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm">
+                    <img src="/placeholder.svg?height=300&width=300" class="card-img-top product-img" alt="Sakura Plate Set">
+                    <div class="card-body">
+                        <h5 class="card-title">Sakura Plate Set</h5>
+                        <p class="text-danger">$49.99</p>
+                        <a href="#" class="btn btn-dark w-100">Add to Cart</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Product 3 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm">
+                    <img src="/placeholder.svg?height=300&width=300" class="card-img-top product-img" alt="Matcha Tea Cup">
+                    <div class="card-body">
+                        <h5 class="card-title">Matcha Tea Cup</h5>
+                        <p class="text-danger">$19.99</p>
+                        <a href="#" class="btn btn-dark w-100">Add to Cart</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Add more products similarly -->
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="bg-light py-5">
+    <div class="container text-center">
+        <h2 class="mb-4">Stay Updated</h2>
+        <p class="mb-4">Subscribe to our newsletter for exclusive offers and Japanese tableware inspiration</p>
+        <div class="d-flex justify-content-center">
+            <input type="email" class="form-control w-auto rounded-0" placeholder="Enter your email">
+            <button class="btn btn-danger rounded-0">Subscribe</button>
+        </div>
+    </div>
+</section>
