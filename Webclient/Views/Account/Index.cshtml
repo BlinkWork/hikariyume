@@ -1,1 +1,76 @@
-﻿
+﻿@{
+    ViewData["Title"] = "Thông tin cá nhân";
+}
+
+<style>
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .navbar-brand {
+        font-weight: bold;
+    }
+
+        .navbar-brand span {
+            color: #dc3545;
+        }
+
+    .account-header {
+        background-color: #dc3545;
+        color: white;
+        padding: 40px 0;
+        margin-bottom: 30px;
+    }
+
+    .account-form {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+
+    .btn-primary {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+</style>
+
+<header class="account-header">
+    <div class="container">
+        <h1 class="display-4">Thông Tin Tài Khoản</h1>
+        <p class="lead">Cập nhật thông tin cá nhân của bạn</p>
+    </div>
+</header>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form asp-action="Edit" method="post" class="account-form">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" value="example@email.com" required>
+                </div>
+                <div class="mb-3">
+                    <label for="fullName" class="form-label">Họ và tên</label>
+                    <input type="text" class="form-control" id="fullName" value="Nguyễn Văn A" required>
+                </div>
+                <div class="mb-3">
+                    <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                    <input type="tel" class="form-control" id="phoneNumber" value="0123456789" pattern="[0-9]{10}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Địa chỉ</label>
+                    <textarea class="form-control" id="address" rows="3" required>123 Đường ABC, Quận XYZ, Thành phố HCM</textarea>
+                </div>
+                <button class="m-auto" type="submit" class="btn btn-primary">Cập nhật thông tin</button>
+            </form>
+        </div>
+    </div>
+</div>

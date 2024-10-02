@@ -4,6 +4,15 @@ namespace Webclient.Controllers
 {
     public class AccountController : Controller
     {
+        public IActionResult Index()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit()
+        {
+            return Ok();
+        }
         public IActionResult Login()
         {
             return View();
@@ -29,6 +38,11 @@ namespace Webclient.Controllers
         public async Task<IActionResult> ProceedCheckout()
         {
             return Ok();
+        }
+        [HttpGet]
+        public async Task<IActionResult> History(string page = "1")
+        {
+            return View();
         }
     }
 }

@@ -1,4 +1,4 @@
-# Hikari Yumi
+# Hikari Yume
 
 This is an e-commerce website project developed as part of a startup course. The website showcases a list of Japanese ceramic products, and users can view product details, place orders, and see seller information. The project is built using **ASP.NET Core MVC** and follows a simple yet robust architecture to manage products and orders.
 
