@@ -1,0 +1,159 @@
+﻿@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+<style>
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .navbar-brand {
+        font-weight: bold;
+    }
+
+        .navbar-brand span {
+            color: #dc3545;
+        }
+
+    .cart-container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+
+    .cart-item {
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+    }
+
+        .cart-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+    .product-image {
+        max-width: 100px;
+        height: auto;
+    }
+
+    .quantity-input {
+        width: 60px;
+    }
+
+    .summary-card {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .btn-primary {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+</style>
+<div class="row">
+    <div class="col-lg-8">
+        <div class="cart-container">
+            <h2 class="mb-4">Giỏ hàng của bạn</h2>
+            <div class="cart-item">
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        <img src="/placeholder.svg?height=100&width=100" alt="Ceramic Rice Bowl" class="product-image">
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Ceramic Rice Bowl</h5>
+                        @* Quick brief about item *@
+                        <p class="text-muted">Color: White</p>
+                    </div>
+                    <div class="col-md-2">
+                        <p>$24.99</p>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" class="form-control quantity-input" value="1" min="1">
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="cart-item">
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        <img src="/placeholder.svg?height=100&width=100" alt="Sakura Plate Set" class="product-image">
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Sakura Plate Set</h5>
+                        <p class="text-muted">Set of 4</p>
+                    </div>
+                    <div class="col-md-2">
+                        <p>$49.99</p>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" class="form-control quantity-input" value="1" min="1">
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="cart-item">
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        <img src="/placeholder.svg?height=100&width=100" alt="Matcha Tea Cup" class="product-image">
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Matcha Tea Cup</h5>
+                        <p class="text-muted">Color: Green</p>
+                    </div>
+                    <div class="col-md-2">
+                        <p>$19.99</p>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" class="form-control quantity-input" value="2" min="1">
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="cart-container summary-card">
+            <h3 class="mb-4">Order Summary</h3>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Sản phẩm</span>
+                <span>$114.96</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Phí ship</span>
+                <span>$10.00</span>
+            </div>
+            <div class="d-flex justify-content-between mb-4">
+                <strong>Tổng</strong>
+                <strong>$136.46</strong>
+            </div>
+            <a asp-action="Checkout" class="btn btn-primary w-100">Đặt hàng</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    let cartItems;
+</script>
