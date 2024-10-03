@@ -79,14 +79,17 @@
         <div class="logo">
             <h1><img src="/img/exeLogo.png" class="logoIcon" width="64" height="64"/> <span>Hikari Yume</span></h1>
         </div>
+        @ViewBag.Message
         <form asp-action="Login" method="post">
             <div class="mb-3">
                 <label for="email" class="form-label">Địa chỉ email</label>
                 <input asp-for="email" require type="email" class="form-control" id="email" placeholder="Nhập email của bạn vào đây" required>
+                <span asp-validation-for="email" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Mật khẩu</label>
                 <input asp-for="password" require type="password" class="form-control" id="password" placeholder="Nhập mật khẩu của bạn vào đây" required>
+                <span asp-validation-for="password" class="text-danger"></span>
             </div>
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="rememberMe">
