@@ -246,7 +246,6 @@ namespace Webclient.Controllers
                     {
                         throw new Exception("giỏ hàng đang trống.");
                     }
-                    Console.WriteLine("DCDCDCD");
                     // Create a new Order
                     var order = new Order
                     {
@@ -279,62 +278,6 @@ namespace Webclient.Controllers
                     context.SaveChanges();
                 }
                 return Ok();
-
-                //int id = int.Parse(HttpContext.Session.GetString("UserId"));
-                //if (cartItems == null || cartItems.Count == 0)
-                //{
-                //    throw new Exception("Giỏ hàng không có đồ");
-                //}
-                //decimal money = 0;
-                //var list = new List<OrderItem>();
-                //Order order = new Order()
-                //{
-                //    UserId = id,
-                //    Status = "Đang chờ",
-                //    TotalPrice = 0m,
-                //};
-
-                //context.Orders.Add(order);
-                //await context.SaveChangesAsync();
-
-                //Console.WriteLine(cartItems.Count());
-
-                //int orderId = context.Orders.Last().OrderId;
-
-
-                //foreach (Cart cart in cartItems)
-                //{
-                //    money += cart.Quantity * cart.Product.Price;
-                //    OrderItem item = new OrderItem()
-                //    {
-                //        OrderId = orderId,
-                //        ProductId = cart.ProductId,
-                //        Price = cart.Product.Price,
-                //        Quantity = cart.Quantity,
-                //    };
-                //    Product product = context.Products.FirstOrDefault(p => p.ProductId == cart.ProductId);
-                //    if (product == null)
-                //    {
-                //        throw new Exception("Sản phẩm không tồn tại");
-                //    }
-                //    else
-                //    {
-                //        product.StockQuantity -= cart.Quantity;
-                //        if (product.StockQuantity <= 0) throw new Exception("Số lượng sản phầm tồn kho không đúng");
-                //    }
-                //    context.Products.Update(product);
-                //    await context.SaveChangesAsync();
-                //    list.Add(item);
-                //}
-
-                //order.TotalPrice = money;
-                //context.OrderItems.AddRange(list);
-                //await context.SaveChangesAsync();
-                //context.Carts.RemoveRange(cartItems);
-                //await context.SaveChangesAsync();
-                //context.Orders.Update(order);
-                //await context.SaveChangesAsync();
-                //return Ok("Đặt hàng thành công!");
             }
             catch (ArgumentNullException ale)
             {
