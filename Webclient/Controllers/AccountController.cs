@@ -100,7 +100,7 @@ namespace Webclient.Controllers
                 new { token = token }, Request.Scheme);
 
             MailMessage mail = new MailMessage();
-            mail.From = new MailAddress(Environment.GetEnvironmentVariable("GMAIL_EMAIL"));
+            mail.From = new MailAddress("quannmhe171875@fpt.edu.vn");
             mail.To.Add(email);
             mail.Subject = "Xác thực tài khoản";
             mail.Body = $"Nhấn vào link để xác thực: <a href='{verificationLink}'>Xác thực</a>";
