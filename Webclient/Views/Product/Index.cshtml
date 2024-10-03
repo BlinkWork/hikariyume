@@ -1,7 +1,18 @@
 ﻿@{
     ViewData["Title"] = "Sản phẩm";
     string categoryName = ViewData["categoryName"] as string;
+    int currentPage = (int)ViewData["currentPage"];
+    int maxPage = (int)ViewData["maxPage"];
+    int categoryId = -1;
+    if (ViewData["categoryId"] != null)
+    {
+        categoryId = (int)ViewData["categoryId"];
+    }
+
+    string option = ViewData["option"] as string;
+    string search = ViewData["search"] as string;
 }
+@model IEnumerable<Product>
 <style>
     .category-header {
         background-color: #dc3545;
@@ -18,99 +29,155 @@
 </header>
 <div class="row mb-4">
     <div class="col-md-6">
-        <p>Hiển thị 1-12 trong số 36 sản phẩm</p>
+        <p>
+            Hiển thị @ViewData["minProduct"]-@ViewData["maxDisplayProduct"] trong số @ViewData["maxProduct"] sản phẩm </ p >
     </div>
     <div class="col-md-6 text-md-end">
-        <select class="form-select d-inline-block w-auto">
-            <option>Sắp xếp theo mặc định</option>
-            <option>Giá: Thấp đến cao</option>
-            <option>Giá: Cao đến thấp</option>
-            <option>Mới nhất</option>
+        <select onchange="directIntoNewPage(this.value);" class="form-select d-inline-block w-auto">
+            <option value="default">Sắp xếp theo mặc định</option>
+            <option value="asc">Giá: Thấp đến cao</option>
+            <option value="desc">Giá: Cao đến thấp</option>
+            <option value="new">Mới nhất</option>
+            <option value="old">Cũ nhất</option>
         </select>
     </div>
 </div>
 
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-    <div class="col">
-        <div class="card product-card h-100">
-            <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát cơm gốm">
-            <div class="card-body">
-                <h5 class="card-title">Bát cơm gốm</h5>
-                <p class="card-text">Bát cơm gốm truyền thống Nhật Bản, hoàn hảo cho bữa ăn hàng ngày.</p>
-                <p class="card-text"><strong>250.000₫</strong></p>
-                <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
+    @foreach (Product product in Model)
+    {
+        <div class="col">
+            <div class="card product-card h-100">
+                <img src="/img/@product.Image" class="card-img-top product-image" alt="Bát cơm gốm">
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text">@product.Description</p>
+                    <p class="card-text"><strong>@product.Price.ToString("0")₫</strong></p>
+                    <a href="/Product/Details?id=@product.ProductId" class="btn btn-primary w-100">Xem thêm chi tiết</a>
+                </div>
             </div>
         </div>
+    }
+
+    @* <div class="col">
+    <div class="card product-card h-100">
+    <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát mì ramen">
+    <div class="card-body">
+    <h5 class="card-title">Bát mì ramen</h5>
+    <p class="card-text">Bát lớn hoàn hảo cho món mì ramen nóng hổi của bạn.</p>
+    <p class="card-text"><strong>300.000₫</strong></p>
+    <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
+    </div>
+    </div>
     </div>
     <div class="col">
-        <div class="card product-card h-100">
-            <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát mì ramen">
-            <div class="card-body">
-                <h5 class="card-title">Bát mì ramen</h5>
-                <p class="card-text">Bát lớn hoàn hảo cho món mì ramen nóng hổi của bạn.</p>
-                <p class="card-text"><strong>300.000₫</strong></p>
-                <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
-            </div>
-        </div>
+    <div class="card product-card h-100">
+    <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bộ bát đa năng">
+    <div class="card-body">
+    <h5 class="card-title">Bộ bát đa năng</h5>
+    <p class="card-text">Bộ 4 bát đa năng với các kích cỡ khác nhau cho mọi nhu cầu.</p>
+    <p class="card-text"><strong>500.000₫</strong></p>
+    <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
+    </div>
+    </div>
     </div>
     <div class="col">
-        <div class="card product-card h-100">
-            <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bộ bát đa năng">
-            <div class="card-body">
-                <h5 class="card-title">Bộ bát đa năng</h5>
-                <p class="card-text">Bộ 4 bát đa năng với các kích cỡ khác nhau cho mọi nhu cầu.</p>
-                <p class="card-text"><strong>500.000₫</strong></p>
-                <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
-            </div>
-        </div>
+    <div class="card product-card h-100">
+    <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát salad gỗ">
+    <div class="card-body">
+    <h5 class="card-title">Bát salad gỗ</h5>
+    <p class="card-text">Bát salad bằng gỗ tự nhiên, mang lại vẻ đẹp rustic cho bàn ăn.</p>
+    <p class="card-text"><strong>350.000₫</strong></p>
+    <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
+    </div>
+    </div>
     </div>
     <div class="col">
-        <div class="card product-card h-100">
-            <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát salad gỗ">
-            <div class="card-body">
-                <h5 class="card-title">Bát salad gỗ</h5>
-                <p class="card-text">Bát salad bằng gỗ tự nhiên, mang lại vẻ đẹp rustic cho bàn ăn.</p>
-                <p class="card-text"><strong>350.000₫</strong></p>
-                <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
-            </div>
-        </div>
+    <div class="card product-card h-100">
+    <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát súp miso">
+    <div class="card-body">
+    <h5 class="card-title">Bát súp miso</h5>
+    <p class="card-text">Bát súp miso truyền thống với nắp đậy, giữ súp nóng lâu hơn.</p>
+    <p class="card-text"><strong>200.000₫</strong></p>
+    <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
+    </div>
+    </div>
     </div>
     <div class="col">
-        <div class="card product-card h-100">
-            <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát súp miso">
-            <div class="card-body">
-                <h5 class="card-title">Bát súp miso</h5>
-                <p class="card-text">Bát súp miso truyền thống với nắp đậy, giữ súp nóng lâu hơn.</p>
-                <p class="card-text"><strong>200.000₫</strong></p>
-                <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
-            </div>
-        </div>
+    <div class="card product-card h-100">
+    <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát đựng gia vị">
+    <div class="card-body">
+    <h5 class="card-title">Bát đựng gia vị</h5>
+    <p class="card-text">Bộ 3 bát nhỏ đựng gia vị, hoàn hảo cho bàn ăn của bạn.</p>
+    <p class="card-text"><strong>150.000₫</strong></p>
+    <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
     </div>
-    <div class="col">
-        <div class="card product-card h-100">
-            <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát đựng gia vị">
-            <div class="card-body">
-                <h5 class="card-title">Bát đựng gia vị</h5>
-                <p class="card-text">Bộ 3 bát nhỏ đựng gia vị, hoàn hảo cho bàn ăn của bạn.</p>
-                <p class="card-text"><strong>150.000₫</strong></p>
-                <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
-            </div>
-        </div>
     </div>
+    </div> *@
 </div>
 
 <nav aria-label="Page navigation" class="my-5">
     <ul class="pagination justify-content-center">
-        <li class="page-item disabled">
-            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trước</a>
+        <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+            <a class="page-link" href="#" onclick="GoPrevious();" tabindex="-1" aria-disabled="@(currentPage > 1 ? "false" : "true")">Trước</a>
         </li>
-        <li class="page-item active" aria-current="page">
-            <a class="page-link" href="#">1</a>
-        </li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item">
-            <a class="page-link" href="#">Sau</a>
+        @if (currentPage == 1)
+        {
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">1</a>
+            </li>
+            @for (int index = 2; index <= Math.Min(3, maxPage); index++)
+            {
+                <li class="page-item"><a class="page-link" onclick="GoTo(@index)" href="#">@index</a></li>
+            }
+        }
+        else if (currentPage == maxPage)
+        {
+            @for (int index = maxPage - 3; index < maxPage; index++)
+            {
+                <li class="page-item"><a class="page-link" onclick="GoTo(@index)" href="#">@index</a></li>
+            }
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">@maxPage</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" onclick="GoTo(@(currentPage-1)" href="#">@(currentPage - 1)</a></li>
+
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">@currentPage</a>
+            </li>
+            <li class="page-item"><a class="page-link" onclick="GoTo(@(currentPage+1))" href="#">@(currentPage + 1)</a></li>
+        }
+        <li class="page-item  @(currentPage >= maxPage ? "disabled" : "")">
+            <a class="page-link" href="#" onclick="GoNext();" aria-disabled="@(currentPage == maxPage?"true":"false")">Sau</a>
         </li>
     </ul>
 </nav>
+
+<script>
+    function directIntoNewPage(value) {
+        let currentUrl = new URL(window.location.href);
+
+        if (value) {
+            currentUrl.searchParams.set('option', value);
+        } else {
+            currentUrl.searchParams.delete('option');
+        }
+
+        window.location.href = currentUrl;
+    }
+    function GoNext() {
+        let newUrl = `/Product?categoryId=@(categoryId == -1 ? "" : categoryId)&option=@option&search=@search&page=@(currentPage + 1)`;
+        window.location.href = newUrl;
+    }
+    function GoPrevious() {
+        let newUrl = `/Product?categoryId=@(categoryId == -1 ? "" : categoryId)&option=@option&search=@search&page=@(currentPage - 1)`;
+        window.location.href = newUrl;
+    }
+    function GoTo(pageNumber) {
+        let newUrl = `/Product?categoryId=@(categoryId == -1 ? "" : categoryId)&option=@option&search=@search&page=${pageNumber}`;
+        window.location.href = newUrl;
+    }
+</script>

@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Hikari Yumi - Japanese Tableware";
+    List<Product> list = (List<Product>)ViewData["list"];
 }
 
 <style>
@@ -34,42 +35,22 @@
 <!-- Featured Products -->
 <section class="py-5">
     <div class="container">
-        <h2 class="text-center mb-5">Sản phẩm</h2>
+        <h2 class="text-center mb-5">Sản phẩm mới nhất</h2>
         <div class="row g-4">
-            <!-- Product 1 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card shadow-sm">
-                    <img src="/placeholder.svg?height=300&width=300" class="card-img-top product-img" alt="Ceramic Rice Bowl">
-                    <div class="card-body">
-                        <h5 class="card-title">Ceramic Rice Bowl</h5>  
-                        <p class="card-text"><strong>250.000₫</strong></p>
-                        <a href="#" class="btn btn-dark w-100">Add to Cart</a>
+            @foreach (Product product in list)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm">
+                        <img src="/img/@product.Image" class="card-img-top product-img" alt="@product.Image">
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text"><strong>@product.Price.ToString("0")₫</strong></p>
+                            <p class="card-text">Ra mắt: @product.CreatedAt.GetValueOrDefault().ToString("d")</p>
+                            <a href="/Product/Details?id=@product.ProductId" class="btn btn-dark w-100">Xem thêm chi tiết</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- Product 2 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card shadow-sm">
-                    <img src="/placeholder.svg?height=300&width=300" class="card-img-top product-img" alt="Sakura Plate Set">
-                    <div class="card-body">
-                        <h5 class="card-title">Sakura Plate Set</h5>
-                        <p class="card-text"><strong>250.000₫</strong></p>
-                        <a href="#" class="btn btn-dark w-100">Add to Cart</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Product 3 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card shadow-sm">
-                    <img src="/placeholder.svg?height=300&width=300" class="card-img-top product-img" alt="Matcha Tea Cup">
-                    <div class="card-body">
-                        <h5 class="card-title">Matcha Tea Cup</h5>
-                        <p class="card-text"><strong>250.000₫</strong></p>
-                        <a href="#" class="btn btn-dark w-100">Add to Cart</a>
-                    </div>
-                </div>
-            </div>
-
+            }
         </div>
     </div>
 </section>

@@ -1,34 +1,44 @@
 ﻿@{
     ViewData["Title"] = "Chi tiết sản phẩm";
+    List<Product> related = (List<Product>)ViewData["relatedProducts"];
 }
+@model Product
+
 <style>
     body {
         font-family: 'Helvetica Neue', Arial, sans-serif;
         background-color: #f8f9fa;
         color: #333;
     }
+
     .navbar-brand {
         font-weight: bold;
     }
-    .navbar-brand span {
-        color: #dc3545;
-    }
+
+        .navbar-brand span {
+            color: #dc3545;
+        }
+
     .product-image {
         max-height: 400px;
         object-fit: cover;
     }
+
     .price {
         font-size: 1.5rem;
         color: #dc3545;
     }
+
     .btn-add-to-cart {
         background-color: #28a745;
         border-color: #28a745;
     }
-    .btn-add-to-cart:hover {
-        background-color: #218838;
-        border-color: #1e7e34;
-    }
+
+        .btn-add-to-cart:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
     .related-product-img {
         height: 150px;
         object-fit: cover;
@@ -37,49 +47,45 @@
 
 <div class="row">
     <div class="col-md-6">
-        <img src="/placeholder.svg?height=400&width=400" alt="Ceramic Rice Bowl" class="img-fluid rounded product-image">
+        <img src="/img/@Model.Image" alt="@Model.Name" class="img-fluid rounded product-image">
     </div>
     <div class="col-md-6">
-        <h1 class="mb-4">Ceramic Rice Bowl</h1>
-        <p class="price mb-3">$24.99</p>
-        <p class="mb-4">Elevate your dining experience with our authentic Japanese ceramic rice bowl. Crafted by skilled artisans, this bowl combines traditional design with modern functionality.</p>
+        <h1 class="mb-4">@Model.Name</h1>
+        <p class="price mb-3">Giá: @Model.Price.ToString("0")₫</p>
+        <p class="mb-4">Tình trạng: @(Model.StockQuantity > 0 ? "Còn hàng" : "Hết hàng")</p>
+        @* <div class="mb-4">
+        <h5>Features:</h5>
+        <ul>
+        <li>Made from high-quality ceramic</li>
+        <li>Microwave and dishwasher safe</li>
+        <li>Perfect size for individual servings</li>
+        <li>Available in multiple colors</li>
+        </ul>
+        </div> *@
         <div class="mb-4">
-            <h5>Features:</h5>
-            <ul>
-                <li>Made from high-quality ceramic</li>
-                <li>Microwave and dishwasher safe</li>
-                <li>Perfect size for individual servings</li>
-                <li>Available in multiple colors</li>
-            </ul>
+            <label for="quantity" class="form-label">Số lượng:</label>
+            <input id="quantity" class="form-control w-25" type="number" min="1" max="@Model.StockQuantity" />
         </div>
-        <div class="mb-4">
-            <label for="quantity" class="form-label">Quantity:</label>
-            <select class="form-select w-25" id="quantity">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select>
-        </div>
-        <button class="btn btn-add-to-cart btn-lg">Add to Cart</button>
+        <button onclick="addItemToCart()" class="btn btn-add-to-cart btn-lg">Thêm vào Giỏ</button>
     </div>
 </div>
 
 <section class="mt-5">
-    <h2 class="mb-4">Product Details</h2>
+    <h2 class="mb-4">Chi tiết sản phẩm</h2>
     <div class="row">
         <div class="col-md-6">
-            <h5>Dimensions</h5>
-            <p>Diameter: 5 inches (12.7 cm)<br>Height: 2.5 inches (6.35 cm)</p>
-            <h5>Materials</h5>
-            <p>High-quality ceramic with a glossy finish</p>
+            <h5>Kích thước</h5>
+            <p>@Model.Description</p>
+            @* <p>Diameter: 5 inches (12.7 cm)<br>Height: 2.5 inches (6.35 cm)</p> *@
+            <h5>Chất liệu</h5>
+            <p></p>
+            @* <p>High-quality ceramic with a glossy finish</p> *@
         </div>
         <div class="col-md-6">
-            <h5>Care Instructions</h5>
-            <p>Dishwasher safe, but hand washing is recommended for longevity. Microwave safe for reheating.</p>
-            <h5>Origin</h5>
-            <p>Handcrafted in Arita, Japan, known for its centuries-old pottery tradition.</p>
+            @*    <h5>Care Instructions</h5>
+            <p>Dishwasher safe, but hand washing is recommended for longevity. Microwave safe for reheating.</p> *@
+            <h5>Xuất sứ</h5>
+            <p>Nhập khẩu.</p>
         </div>
     </div>
 </section>
@@ -87,45 +93,51 @@
 <section class="mt-5">
     <h2 class="mb-4">Các sản phẩm liên quan</h2>
     <div class="row">
-        <div class="col-6 col-md-3 mb-4">
-            <div class="card">
-                <img src="/placeholder.svg?height=150&width=150" class="card-img-top related-product-img" alt="Sakura Plate Set">
-                <div class="card-body">
-                    <h5 class="card-title">Sakura Plate Set</h5>
-                    <p class="card-text">$49.99</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+        @foreach (Product product in related)
+        {
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card">
+                    <img src="/img/@product.Image" class="card-img-top related-product-img" alt="@product.Name">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">@product.Price.ToString("0")₫</p>
+                        <a href="/Product/Details?id=@product.ProductId" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6 col-md-3 mb-4">
-            <div class="card">
-                <img src="/placeholder.svg?height=150&width=150" class="card-img-top related-product-img" alt="Matcha Tea Cup">
-                <div class="card-body">
-                    <h5 class="card-title">Matcha Tea Cup</h5>
-                    <p class="card-text">$19.99</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">View Details</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3 mb-4">
-            <div class="card">
-                <img src="/placeholder.svg?height=150&width=150" class="card-img-top related-product-img" alt="Sushi Serving Platter">
-                <div class="card-body">
-                    <h5 class="card-title">Sushi Serving Platter</h5>
-                    <p class="card-text">$39.99</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">View Details</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3 mb-4">
-            <div class="card">
-                <img src="/placeholder.svg?height=150&width=150" class="card-img-top related-product-img" alt="Sake Cup Duo">
-                <div class="card-body">
-                    <h5 class="card-title">Sake Cup Duo</h5>
-                    <p class="card-text">$29.99</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">View Details</a>
-                </div>
-            </div>
-        </div>
+        }
     </div>
 </section>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+<script>
+    function addItemToCart() {
+        if ($("#quantity").val() == "") {
+            toastr.error(`Số lượng tối thiểu là 1`, 'Lỗi');
+            return;
+        }
+        if ($("#quantity").val() > @Model.StockQuantity) {
+            toastr.error(`Số lượng đặt không thể vượt quá tồn kho`, 'Lỗi');
+            return;
+        }
+
+        let item = {
+            ProductId: @Model.ProductId,
+            Quantity: $("#quantity").val() 
+        };
+
+        $.ajax({
+            url: '/Account/AddToCart',
+            type: 'POST',
+            contentType: 'application/json', 
+            data: JSON.stringify(item), 
+            success: function (response) {
+                toastr.success('Đã thêm mặt hàng vào giỏ!', 'Thành công');
+            },
+            error: function (xhr, status, error) {
+                toastr.error(`Không thể thêm mặt hàng do ${xhr.responseText}`, 'Lỗi');
+            }
+        });
+    }
+
+</script>

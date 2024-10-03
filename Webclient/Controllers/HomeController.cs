@@ -7,6 +7,7 @@ namespace Webclient.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly HikariYumeContext context = new HikariYumeContext();
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -15,6 +16,8 @@ namespace Webclient.Controllers
 
         public IActionResult Index()
         {
+            var list = context.Products.OrderBy(p => p.CreatedAt).Take(3).ToList();
+            ViewData["list"] = list;
             return View();
         }
 

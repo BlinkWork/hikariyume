@@ -28,8 +28,11 @@ namespace Webclient.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            optionsBuilder.UseSqlServer(config.GetConnectionString("MyCnn"));
+            var builder = new ConfigurationBuilder()
+                              .SetBasePath(Directory.GetCurrentDirectory())
+                              .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            IConfigurationRoot configuration = builder.Build();
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("MyCnn"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -86,7 +89,6 @@ namespace Webclient.Models
 
                 entity.Property(e => e.Status)
                     .HasMaxLength(10)
-                    .IsUnicode(false)
                     .HasColumnName("status");
 
                 entity.Property(e => e.TotalPrice)
@@ -227,10 +229,10 @@ namespace Webclient.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasIndex(e => e.Email, "UQ__Users__AB6E616420C5BEA7")
+                entity.HasIndex(e => e.Email, "UQ__Users__AB6E6164BA27637E")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Username, "UQ__Users__F3DBC57262D4A2EB")
+                entity.HasIndex(e => e.Username, "UQ__Users__F3DBC5721E0C4EEB")
                     .IsUnique();
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");

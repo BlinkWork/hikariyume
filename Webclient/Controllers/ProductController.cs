@@ -32,14 +32,19 @@ namespace Webclient.Controllers
                     }
 
             }
+            if (categoryId != null)
+            {
+                ViewData["categoryId"] = categoryId;
+            }
             List<Product> products = context.Products.ToList();
             if (categoryId != null)
             {
                 products = products.Where(p => p.CategoryId == categoryId).ToList();
             }
-            if (String.IsNullOrEmpty(search))
+            if (!String.IsNullOrEmpty(search))
             {
                 products = products.Where(p => p.Name.Contains(search)).ToList();
+                ViewData["search"] = search;
             }
             switch (option)
             {
@@ -56,23 +61,34 @@ namespace Webclient.Controllers
                     products = products.OrderByDescending(p => p.CreatedAt).ToList();
                     break;
             }
+            ViewData["option"] = option;
+            ViewData["minProduct"] = products.Count > 0 ? 1 : 0;
+            ViewData["maxProduct"] = products.Count;
             products = products.Skip((page - 1) * 6).Take(6).ToList();
+            ViewData["maxDisplayProduct"] = products.Count;
             int maxPage = products.Count / 6 ;
             if (products.Count % 6 != 0)
             {
                 maxPage++;
             }
+            ViewData["currentPage"] = page;
             ViewData["maxPage"] = maxPage;
             return View(products);
         }
 
-        public IActionResult Detail(int id)
+        public IActionResult Details(int id)
         {
             Product p = context.Products.FirstOrDefault(p => p.ProductId == id);
             if (p == null)
             {
                 return View("Index", "Home");
             }
+            List<Product> relatedProduct = context.Products.Where(t => t.CategoryId == p.CategoryId).ToList();
+            if (relatedProduct.Contains(p))
+            {
+                relatedProduct.Remove(p);
+            }
+            ViewData["relatedProducts"] = relatedProduct.Take(4).ToList();
             return View(p);
         }
     }

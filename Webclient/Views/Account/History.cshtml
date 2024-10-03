@@ -1,6 +1,9 @@
 ﻿@{
     ViewData["Title"] = "Lịch sử";
+    int maxPage = (int)ViewData["maxPage"];
+    int currentPage = (int)ViewData["currentPage"];
 }
+@model IEnumerable<Order>
 <style>
     body {
         font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -60,74 +63,79 @@
             border-color: #bd2130;
         }
 </style>
-
+@foreach(Order order in Model)
+{
     <div class="order-card">
         <div class="row">
             <div class="col-md-3">
-                <h5>Đơn hàng #12345</h5>
-                <p class="text-muted">Ngày đặt: 15/07/2023</p>
+                <h5>Đơn hàng #@order.OrderId</h5>
+                <p class="text-muted">Ngày đặt: @order.CreatedAt.GetValueOrDefault().ToString("d") lúc @order.CreatedAt.GetValueOrDefault().ToString("T")</p>
             </div>
             <div class="col-md-5">
-                <p><strong>Sản phẩm:</strong> Bát cơm gốm (x2), Đĩa sushi (x1)</p>
-                <p><strong>Tổng tiá:</strong> 750.000₫</p>
+                <p><strong>Sản phẩm:</strong> @foreach (OrderItem orderItem in order.OrderItems) {
+                    <span>@(orderItem.Product.Name) (x@(orderItem.Quantity))</span>
+                }
+                </p>
+                <p><strong>Tổng giá:</strong> @order.TotalPrice.ToString("0")₫</p>
             </div>
             <div class="col-md-2">
-                <p class="order-status status-delivered">Đã giao hàng</p>
+                @if (order.Status.Equals("Đang chờ") || order.Status.Equals("Đang giao"))
+                {
+                    <p class="order-status status-processing">@order.Status</p>
+                    
+                } else if (order.Status.Equals("Hoàn thành"))
+                {
+                    <p class="order-status status-delivered">@order.Status</p>
+                    
+                } else if (order.Status.Equals("Bị hủy"))
+                {
+                    <p class="order-status status-cancelled">@order.Status</p>
+                }
             </div>
-            <div class="col-md-2">
+          @*   <div class="col-md-2">
                 <button class="btn btn-primary btn-sm">Chi tiết</button>
-            </div>
+            </div> *@
         </div>
     </div>
+}
 
-    <div class="order-card">
-        <div class="row">
-            <div class="col-md-3">
-                <h5>Đơn hàng #12346</h5>
-                <p class="text-muted">Ngày đặt: 20/07/2023</p>
-            </div>
-            <div class="col-md-5">
-                <p><strong>Sản phẩm:</strong> Bộ ấm trà (x1), Chén uống trà (x4)</p>
-                <p><strong>Tổng tiá:</strong> 1.200.000₫</p>
-            </div>
-            <div class="col-md-2">
-                <p class="order-status status-processing">Đang xử lý</p>
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-primary btn-sm">Chi tiết</button>
-            </div>
-        </div>
-    </div>
 
-    <div class="order-card">
-        <div class="row">
-            <div class="col-md-3">
-                <h5>Đơn hàng #12347</h5>
-                <p class="text-muted">Ngày đặt: 25/07/2023</p>
-            </div>
-            <div class="col-md-5">
-                <p><strong>Sản phẩm:</strong> Bát mì ramen (x2), Đũa gỗ (x2)</p>
-                <p><strong>Tổng tiá:</strong> 550.000₫</p>
-            </div>
-            <div class="col-md-2">
-                <p class="order-status status-cancelled">Đã hủy</p>
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-primary btn-sm">Chi tiết</button>
-            </div>
-        </div>
-    </div>
-
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trước</a>
+<nav aria-label="Page navigation" class="my-5">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+            <a class="page-link" href="#" onclick="GoPrevious();" tabindex="-1" aria-disabled="@(currentPage > 1 ? "false" : "true")">Trước</a>
+        </li>
+        @if (currentPage == 1)
+        {
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">1</a>
             </li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#">Sau</a>
+            @for (int index = 2; index <= Math.Min(5, maxPage); index++)
+            {
+                <li class="page-item"><a class="page-link" onclick="GoTo(@index)" href="#">@index</a></li>
+            }
+        }
+        else if (currentPage == maxPage)
+        {
+            @for (int index = maxPage - 5; index < maxPage; index++)
+            {
+                <li class="page-item"><a class="page-link" onclick="GoTo(@index)" href="#">@index</a></li>
+            }
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">@maxPage</a>
             </li>
-        </ul>
-    </nav>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" onclick="GoTo(@(currentPage-1)" href="#">@(currentPage - 1)</a></li>
+
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">@currentPage</a>
+            </li>
+            <li class="page-item"><a class="page-link" onclick="GoTo(@(currentPage+1))" href="#">@(currentPage + 1)</a></li>
+        }
+        <li class="page-item  @(currentPage >= maxPage ? "disabled" : "")">
+            <a class="page-link" href="#" onclick="GoNext();" aria-disabled="@(currentPage == maxPage?"true":"false")">Sau</a>
+        </li>
+    </ul>
+</nav>

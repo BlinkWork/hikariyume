@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Webclient.Models
 {
@@ -23,6 +24,7 @@ namespace Webclient.Models
         public DateTime? CreatedAt { get; set; }
 
         public virtual Category? Category { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Cart> Carts { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }

@@ -1,6 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Giỏ hàng";
+    decimal totalMoney = 0;
 }
+@model IEnumerable<Cart>
 <style>
     body {
         font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -63,97 +65,111 @@
 </style>
 <div class="row">
     <div class="col-lg-8">
-        <div class="cart-container">
-            <h2 class="mb-4">Giỏ hàng của bạn</h2>
-            <div class="cart-item">
-                <div class="row align-items-center">
-                    <div class="col-md-2">
-                        <img src="/placeholder.svg?height=100&width=100" alt="Ceramic Rice Bowl" class="product-image">
-                    </div>
-                    <div class="col-md-4">
-                        <h5>Ceramic Rice Bowl</h5>
-                        @* Quick brief about item *@
-                        <p class="text-muted">Color: White</p>
-                    </div>
-                    <div class="col-md-2">
-                        <p>$24.99</p>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" class="form-control quantity-input" value="1" min="1">
-                    </div>
-                    <div class="col-md-2 text-end">
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="cart-item">
-                <div class="row align-items-center">
-                    <div class="col-md-2">
-                        <img src="/placeholder.svg?height=100&width=100" alt="Sakura Plate Set" class="product-image">
-                    </div>
-                    <div class="col-md-4">
-                        <h5>Sakura Plate Set</h5>
-                        <p class="text-muted">Set of 4</p>
-                    </div>
-                    <div class="col-md-2">
-                        <p>$49.99</p>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" class="form-control quantity-input" value="1" min="1">
-                    </div>
-                    <div class="col-md-2 text-end">
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="cart-item">
-                <div class="row align-items-center">
-                    <div class="col-md-2">
-                        <img src="/placeholder.svg?height=100&width=100" alt="Matcha Tea Cup" class="product-image">
-                    </div>
-                    <div class="col-md-4">
-                        <h5>Matcha Tea Cup</h5>
-                        <p class="text-muted">Color: Green</p>
-                    </div>
-                    <div class="col-md-2">
-                        <p>$19.99</p>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" class="form-control quantity-input" value="2" min="1">
-                    </div>
-                    <div class="col-md-2 text-end">
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <div id="cartContainer" class="cart-container">
         </div>
     </div>
     <div class="col-lg-4">
         <div class="cart-container summary-card">
-            <h3 class="mb-4">Order Summary</h3>
+            <h3 class="mb-4">Tổng giá</h3>
             <div class="d-flex justify-content-between mb-2">
-                <span>Sản phẩm</span>
-                <span>$114.96</span>
+                <span>Chi phí</span>
+                <span id="fee">@totalMoney.ToString("0")</span>
             </div>
             <div class="d-flex justify-content-between mb-2">
                 <span>Phí ship</span>
-                <span>$10.00</span>
+                <span>0₫</span>
             </div>
             <div class="d-flex justify-content-between mb-4">
                 <strong>Tổng</strong>
-                <strong>$136.46</strong>
+                <strong id="totalFee">@((totalMoney).ToString("0"))₫</strong>
             </div>
-            <a asp-action="Checkout" class="btn btn-primary w-100">Đặt hàng</a>
+            <btn onclick="proceedCheckout()" class="btn btn-primary w-100">Đặt hàng</btn>
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
 <script>
-    let cartItems;
+    let cartItems = @Html.Raw(Json.Serialize(Model));
+    updateCartUI(cartItems);
+
+    function removeItemFromCart(itemId) {
+        $.ajax({
+            url: '/account/RemoveItemFromCart',
+            type: 'GET',
+            data: { id: itemId },
+            success: function (response) {
+                if (cartItems.$values) {
+                    cartItems = cartItems.$values;
+                }
+
+                cartItems = cartItems.filter(item => item.cartId !== itemId);
+
+                toastr.success('Đã xóa mặt hàng thành công!', 'Thành công');
+
+                updateCartUI(cartItems);
+            },
+            error: function (xhr, status, error) {
+                toastr.error(`${xhr.responseText}.`, 'Lỗi');
+            }
+        });
+    }
+
+    function updateCartUI(cartItems) {
+        $('#cartContainer').empty();
+
+
+        let total = 0;
+        if (cartItems.$values) {
+            cartItems = cartItems.$values;
+        }
+
+        $('#cartContainer').append(`<h2 class="mb-4">Giỏ hàng của bạn</h2>`);
+
+        cartItems.forEach(item => {
+            total += item.product.price * item.quantity;
+
+            $('#cartContainer').append(`
+                    <div class="cart-item" data-cart-id="${item.cartId}">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <img src="/img/${item.product.image}" alt="${item.product.image}" class="product-image">
+                            </div>
+                            <div class="col-md-4">
+                                <h5>${item.product.name}</h5>
+                                <p class="text-muted">${item.product.description}</p>
+                            </div>
+                            <div class="col-md-2">
+                                <p>${item.product.price.toFixed(0)}₫</p>
+                            </div>
+                            <div class="col-md-2">
+                                <p>Số lượng: ${item.quantity}</p>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <a onclick="removeItemFromCart(${item.cartId})" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `);
+        });
+        $('#fee').text(`${total.toFixed(0)}₫`);
+        $('#totalFee').text(`${total.toFixed(0)}₫`);
+    }
+
+    function proceedCheckout() {
+        $.ajax({
+            url: '/account/ProceedCheckout',
+            type: 'POST',
+            success: function (response) {
+                toastr.success(`Đặt hàng thành công`, 'Thành công');
+                window.location.href = '/Account/History';
+            },
+            error: function (xhr, status, error) {
+                toastr.error(`Không thể thực hiện hành động này do ${xhr.responseText}`, 'Lỗi');
+            }
+        });
+    }
+
 </script>
