@@ -90,6 +90,12 @@ namespace Webclient.Controllers
 
         private void SendVerificationEmail(string email, string token)
         {
+            string sessionToken = HttpContext.Session.GetString("EmailVerificationToken");
+            string sessionTokenCreatedAt = HttpContext.Session.GetString("TokenCreatedAt");
+            if (sessionToken != null || sessionTokenCreatedAt != null)
+            {
+                ViewBag.Message = "Đã nhận yêu cầu hãy kiểm tra mail của bạn";
+            }
             string verificationLink = Url.Action("VerifyEmail", "Account",
                 new { token = token }, Request.Scheme);
 
@@ -119,14 +125,16 @@ namespace Webclient.Controllers
 
             if (sessionToken == null || sessionTokenCreatedAt == null)
             {
-                return View("Error");
+                ViewBag.Message = "chưa có yêu cầu";
+                return View("Register");
             }
 
             DateTime tokenCreatedAt = DateTime.Parse(sessionTokenCreatedAt);
             if (DateTime.Now.Subtract(tokenCreatedAt).TotalMinutes > 15)
             {
                 ViewBag.Message = "Token đã hết hạn. Vui lòng đăng ký lại.";
-                return View("Error");
+                Console.WriteLine(ViewBag.Message);
+                return View("Register");
             }
 
             if (sessionToken == token)
@@ -159,7 +167,7 @@ namespace Webclient.Controllers
                 return View("Login");
             }
             ViewBag.Message = "Mã xác thực không hợp lệ.";
-            return View("Error");
+            return View("Register");
         }
 
 

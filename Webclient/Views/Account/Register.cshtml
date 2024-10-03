@@ -74,35 +74,43 @@
     <div class="register-container">
         <div class="logo">
             <h1><img src="/img/exeLogo.png" class="logoIcon" width="64" height="64" /> <span>Hikari Yume</span></h1>
+            @ViewBag.Message
         </div>
         <form asp-action="Register" method="post">
             <div class="mb-3">
                 <label for="fullname" class="form-label">Họ và tên</label>
                 <input asp-for="FullName" type="text" class="form-control" id="fullname" placeholder="Nhập đầy đủ tên của bạn vào đây" required>
+                <span asp-validation-for="FullName" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Địa chỉ email</label>
                 <input asp-for="Email" type="email" class="form-control" id="email" placeholder="Nhập địa chỉ email vào đây" required>
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <label for="username" class="form-label">Tên tài khoản</label>
                 <input asp-for="UserName" type="text" class="form-control" id="username" placeholder="Nhập đầy tên tài khoản của bạn vào đây" required>
+                <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Mật khẩu</label>
                 <input asp-for="Password" type="password" class="form-control" id="password" placeholder="Nhập mật khẩu vào đây" required>
+                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
                 <input asp-for="ConfirmPassword" type="password" class="form-control" id="confirmPassword" placeholder="Nhập mật khẩu một lần nữa ở đây" required>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <label for="address" class="form-label">Địa chỉ</label>
                 <input asp-for="Address" class="form-control" id="address" placeholder="Nhập địa chỉ ở đây" required>
+                <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <label for="phonenumber" class="form-label">Số điện thoại</label>
                 <input asp-for="PhoneNumber" class="form-control" id="phonenumber" placeholder="Nhập số điện thoại ở đây" required>
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="termsAgreement" required>
