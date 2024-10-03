@@ -354,7 +354,7 @@ namespace Webclient.Controllers
 
 
                 var list = context.Orders
-                    //.Where(o => o.UserId == userId)
+                    .Where(o => o.UserId == userId)
                     .Include(o => o.OrderItems).ThenInclude(o => o.Product).Skip((page - 1) * 5).Take(5).ToList();
 
                 ViewData["currentPage"] = page;
