@@ -94,7 +94,7 @@ namespace Webclient.Controllers
             string sessionTokenCreatedAt = HttpContext.Session.GetString("TokenCreatedAt");
             if (sessionToken != null || sessionTokenCreatedAt != null)
             {
-                ViewBag.Message = "Đã nhận yêu cầu hãy kiểm tra mail của bạn";
+                return;
             }
             string verificationLink = Url.Action("VerifyEmail", "Account",
                 new { token = token }, Request.Scheme);
