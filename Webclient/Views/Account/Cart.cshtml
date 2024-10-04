@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Giỏ hàng";
     decimal totalMoney = 0;
+    string address = (string)ViewData["Address"];
 }
 @model IEnumerable<Cart>
 <style>
@@ -70,6 +71,14 @@
     </div>
     <div class="col-lg-4">
         <div class="cart-container summary-card">
+            <h3>Địa chỉ nhận hàng</h3>
+            <div>
+                <span>
+                    @address
+                </span>
+            </div>
+            </div>
+        <div class="cart-container summary-card">
             <h3 class="mb-4">Tổng giá</h3>
             <div class="d-flex justify-content-between mb-2">
                 <span>Chi phí</span>
@@ -83,6 +92,14 @@
                 <strong>Tổng</strong>
                 <strong id="totalFee">@((totalMoney).ToString("0"))₫</strong>
             </div>
+            <div class="d-flex justify-content-between mb-4">
+                <span>Phương thức thanh toán</span>
+                <div class="d-flex align-content-center">
+                    <input class="form-check" id="cod" type="radio" checked />
+                    <label for="cod">Thanh toán bằng COD</label><br>
+                </div>
+            </div>
+          
             <btn onclick="proceedCheckout()" class="btn btn-primary w-100">Đặt hàng</btn>
         </div>
     </div>

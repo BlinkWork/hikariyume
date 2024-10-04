@@ -24,6 +24,7 @@ namespace Webclient.Models
         public string Role { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Cart> Carts { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         [JsonIgnore]

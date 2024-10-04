@@ -16,7 +16,7 @@ CREATE TABLE Users (
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     full_name NVARCHAR(255),
-    address TEXT,
+    address NVARCHAR(255),
     phone_number VARCHAR(15),
     role VARCHAR(10) CHECK (role IN ('admin', 'user')) NOT NULL,
     created_at DATETIME DEFAULT GETDATE()
@@ -48,6 +48,7 @@ CREATE TABLE Orders (
     order_id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
     total_price DECIMAL(10, 2) NOT NULL,
+	address NVARCHAR(255) NOT NULL,
     status NVARCHAR(10) CHECK (status IN (N'Đang chờ', N'Đang giao', N'Hoàn thành', N'Bị hủy')) NOT NULL,
     created_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
@@ -106,9 +107,9 @@ CREATE TABLE Wishlist (
 
 INSERT INTO Users (username, password, email, full_name, address, phone_number, role)
 VALUES 
-('admin', 'password1', 'admin@gom.vn', 'Admin', '123 Gốm St', '0901234567', 'admin'),
-('user1', 'password2', 'user1@gom.vn', 'Nguyen Van A', '456 Gốm St', '0907654321', 'user'),
-('user2', 'password3', 'user2@gom.vn', 'Tran Thi B', '789 Gốm St', '0912345678', 'user');
+('admin', 'password1', 'admin@gom.vn', 'Admin', N'123 Gốm St', '0901234567', 'admin'),
+('user1', 'password2', 'user1@gom.vn', 'Nguyen Van A', N'456 Gốm St', '0907654321', 'user'),
+('user2', 'password3', 'user2@gom.vn', 'Tran Thi B', N'789 Gốm St', '0912345678', 'user');
 
 INSERT INTO Categories (name, description)
 VALUES 
@@ -127,7 +128,7 @@ VALUES
 ('product6.jpg', N'Chén Gốm Thủ Công Họa Tiết Vân Nứt Và Đáy Gỗ', N'12x5 cm', N'Nhật bản', N'Màu trắng sữa', N'Sản phẩm còn mới', NULL, 55000.00, 20, 3),
 ('product7.jpg', N'Cốc Gốm Thủ Công Họa Tiết Xanh Nâu', N'8x10 cm', N'Nhật bản', N'Sự kết hợp hài hòa giữa màu xanh nhạt và nâu sẫm', N'Sản phẩm còn mới', NULL, 55000.00, 20, 3),
 ('product8.jpg', N'Đĩa Gốm Vuông Họa Tiết Màu Xanh Lá', N'16.5x12 cm', N'Nhật bản', N'Màu xanh lá', N'Sản phẩm còn mới', NULL, 50000.00, 20, 2),
-('product9.jpg', N'Đĩa Gốm Hình Ấm Trà', N'12x9', N'Nhật bản', N'Màu trắng ngà', N'Sản phẩm còn mới', NULL, 110000.00, 20, 4),
+('product9.jpg', N'Đĩa Gốm Hình Ấm Trà', N'12x9', N'Nhật bản', N'Màu trắng ngà', N'Sản phẩm còn mới', NULL, 110000.00, 20, 2),
 ('product10.jpg', N'Bát Gốm Trắng Viền Xanh', N'15x6 cm', N'Nhật bản', N'Màu trắng ngà', N'Sản phẩm còn mới', NULL, 40000.00, 20, 1),
 ('product11.jpg', N'Đĩa Gốm thuyền Hoa Văn Hồng', N'22x10 cm', N'Nhật bản', N'Màu trắng ngà', N'Sản phẩm còn mới', NULL, 50000.00, 20, 2),
 ('product12.jpg', N'Đĩa Gốm Oval Viền Đen', N'25x15', N'Nhật bản', N'Màu trắng ngà', N'Sản phẩm còn mới', NULL, 60000.00, 20, 2),
@@ -135,12 +136,6 @@ VALUES
 --('product14.jpg', N'Đĩa Gốm Tròn Hoa Văn', N'18 cm', N'Nhật bản', N'Màu xám nhạt', N'Sản phẩm còn mới', NULL, 65000.00, 20, 2),
 ('product14.jpg', N'Đĩa Gốm Tròn Màu Xanh Viền Chữ "DELICIOUS"', N'25 cm', N'Nhật bản', N'Màu xanh dương', N'Sản phẩm còn mới', NULL, 60000.00, 20, 2),
 ('product15.jpg', N'Bộ Bát Gốm Hoa Văn Trang Nhã', N'12x6 cm', N'Nhật bản', N'Màu xám nhạt', N'Sản phẩm còn mới', NULL, 35000.00, 20, 4);
-
-INSERT INTO Orders (user_id, total_price, status)
-VALUES 
-(2, 125000, N'Đang giao'),
-(3, 80000, N'Hoàn thành'),
-(2, 175000, N'Đang giao');
 
 INSERT INTO Reviews (user_id, product_id, rating, comment)
 VALUES 

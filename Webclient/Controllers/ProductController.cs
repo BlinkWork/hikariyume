@@ -65,7 +65,7 @@ namespace Webclient.Controllers
             }
             ViewData["option"] = option;
             ViewData["minProduct"] = products.Count > 0 ? 1 : 0;
-            ViewData["maxProduct"] = products.Count; 
+            ViewData["maxProduct"] = products.Count;
             int maxPage = products.Count / 6;
             if (products.Count % 6 != 0)
             {
@@ -73,7 +73,7 @@ namespace Webclient.Controllers
             }
             products = products.Skip((page - 1) * 6).Take(6).ToList();
             ViewData["maxDisplayProduct"] = products.Count;
-          
+
             ViewData["currentPage"] = page;
             ViewData["maxPage"] = maxPage;
             return View(products);
@@ -87,13 +87,24 @@ namespace Webclient.Controllers
                 return View("Index", "Home");
             }
             List<Product> relatedProduct = context.Products.Where(t => t.CategoryId == p.CategoryId).ToList();
+
             if (relatedProduct.Contains(p))
             {
                 relatedProduct.Remove(p);
             }
             ViewData["relatedProducts"] = relatedProduct.Take(4).ToList();
+            try
+            {
+                int userId = int.Parse(HttpContext.Session.GetString("UserId"));
 
+                ViewData["canReview"] = context.Reviews.FirstOrDefault(r => r.ProductId == id && r.UserId == userId) == null;
+            }
+            catch
+            {
+                ViewData["canReview"] = false;
+            }
             return View(p);
+
         }
 
         public IActionResult GetReview(int pId, int page = 1)
@@ -103,7 +114,14 @@ namespace Webclient.Controllers
                 return NotFound();
             }
             List<Review> reviews = context.Reviews.Where(r => r.ProductId == pId).Include(r => r.User).Skip((page - 1) * 5).Take(5).ToList();
-            return Ok(reviews);
+            List<ReviewDTO> reviewDTOs = reviews.Select(r => new ReviewDTO
+            {
+                Comment = r.Comment,
+                CreatedAt = r.CreatedAt,
+                Rating = r.Rating,
+                userFullname = r.User.FullName,
+            }).OrderByDescending(p => p.CreatedAt).ToList();
+            return Ok(reviewDTOs);
         }
         public IActionResult GetRemainReview(int pId, int page)
         {
@@ -113,6 +131,27 @@ namespace Webclient.Controllers
             }
             int amount = context.Reviews.Where(r => r.ProductId == pId).Skip(page * 5).Count();
             return Ok(amount);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostReview([FromBody] ReviewSubmit review)
+        {
+            try
+            {
+                Review newReview = new Review()
+                {
+                    UserId = review.UserId,
+                    Comment = review.Comment,
+                    ProductId = review.ProductId,
+                    Rating = review.Rating
+                };
+                context.Reviews.Add(newReview);
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }

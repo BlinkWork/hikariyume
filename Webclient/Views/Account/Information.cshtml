@@ -1,25 +1,28 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Chỉnh sửa thông tin cá nhân";
 }
-
+@model UserChangeInformation
 <style>
     body {
         font-family: 'Helvetica Neue', Arial, sans-serif;
         background-color: #f8f9fa;
     }
+
     .navbar-brand {
         font-weight: bold;
     }
-    .navbar-brand span {
-        color: #dc3545;
-    }
+
+        .navbar-brand span {
+            color: #dc3545;
+        }
+
     .account-header {
         background-color: #dc3545;
         color: white;
         padding: 40px 0;
         margin-bottom: 30px;
     }
+
     .account-form {
         background-color: #ffffff;
         border-radius: 10px;
@@ -27,19 +30,107 @@
         padding: 30px;
         margin-bottom: 30px;
     }
+
     .btn-primary {
         background-color: #dc3545;
         border-color: #dc3545;
     }
-    .btn-primary:hover, .btn-primary:focus {
-        background-color: #c82333;
-        border-color: #bd2130;
-    }
+
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
     .form-label {
         font-weight: bold;
     }
+
     .current-info {
         color: #6c757d;
         margin-bottom: 0.5rem;
     }
 </style>
+<div class="row">
+    <form class="account-form m-auto w-50" onsubmit="changeInformation(event);">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input readonly type="email" class="form-control" id="email" value="@Model.Email" required>
+        </div>
+        <div class="mb-3">
+            <label for="fullName" class="form-label">Họ và tên</label>
+            <input type="text" class="form-control" id="fullname" value="@Model.FullName" required>
+        </div>
+        <div class="mb-3">
+            <label for="username" class="form-label">Tên hiển thị</label>
+            <input type="text" class="form-control" id="username" value="@Model.Username" required>
+        </div>
+        <div class="mb-3">
+            <label for="phoneNumber" class="form-label">Số điện thoại</label>
+            <input type="tel" class="form-control" id="phonenumber" value="@Model.PhoneNumber" pattern="[0-9]{10}" required>
+        </div>
+        <div class="mb-3">
+            <label for="address" class="form-label">Địa chỉ</label>
+            <textarea class="form-control" id="address" rows="3" required>@Model.Address</textarea>
+        </div>
+        <div class="d-flex">
+            <button type="submit" class="btn btn-primary m-auto">Cập nhật thông tin</button>
+        </div>
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+<script>
+    function checkInput() {
+        if ($.trim($('#email').val()) == '') {
+            toastr.error(`Thiếu địa chỉ email.`, 'Lỗi');
+            return false;
+        }
+        if ($.trim($('#username').val()) == '') {
+            toastr.error(`Thiếu tên hiển thị của người dùng.`, 'Lỗi');
+            return false;
+        }
+        if ($.trim($('#fullname').val()) == '') {
+            toastr.error(`Thiếu tên đầy đủ.`, 'Lỗi');
+            return false;
+        }
+        if ($.trim($('#phonenumber').val()) == '') {
+            toastr.error(`Thiếu số điện thoại.`, 'Lỗi');
+            return false;
+        }
+        if ($.trim($('#address').val()) == '') {
+            toastr.error(`Thiếu địa chỉ cụ thể.`, 'Lỗi');
+            return false;
+        }
+        return true;
+    }
+
+    function changeInformation(event) {
+
+        event.preventDefault();
+
+        if (checkInput()) {
+            let information = {
+                UserId: @Model.UserId,
+                Username: $('#username').val(),
+                FullName: $('#fullname').val(),
+                PhoneNumber: $('#phonenumber').val(),
+                Address: $("#address").val(),
+            };
+            $.ajax({
+                url: '/Account/Edit',
+            contentType: 'application/json',
+                type: 'POST',
+                    data: JSON.stringify(information),
+                    success: function (response) {
+                        toastr.success(`Thông tin của người dùng đã được chỉnh sửa`, 'Thành công');
+                        const displayName = $('#username').val();
+                        $("#hello").text(`Xin chào ${displayName}`);
+                    },
+                    error: function (xhr, status, error) {
+                        toastr.error(`Không thể thực hiện hành động này do ${xhr.responseText}`, 'Lỗi');
+                    }
+                });
+
+                }
+            }
+</script>

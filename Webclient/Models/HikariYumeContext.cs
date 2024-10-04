@@ -82,6 +82,10 @@ namespace Webclient.Models
             {
                 entity.Property(e => e.OrderId).HasColumnName("order_id");
 
+                entity.Property(e => e.Address)
+                    .HasMaxLength(255)
+                    .HasColumnName("address");
+
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasColumnName("created_at")
@@ -245,16 +249,16 @@ namespace Webclient.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasIndex(e => e.Email, "UQ__Users__AB6E61644576F321")
+                entity.HasIndex(e => e.Email, "UQ__Users__AB6E6164A1E1C0D2")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Username, "UQ__Users__F3DBC5725E2A1A72")
+                entity.HasIndex(e => e.Username, "UQ__Users__F3DBC5721B0697CD")
                     .IsUnique();
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");
 
                 entity.Property(e => e.Address)
-                    .HasColumnType("text")
+                    .HasMaxLength(255)
                     .HasColumnName("address");
 
                 entity.Property(e => e.CreatedAt)

@@ -9,7 +9,12 @@
         categoryId = (int)ViewData["categoryId"];
     }
 
-    string option = ViewData["option"] as string;
+    string option = "";
+    if (ViewData["option"] != null)
+    {
+        option = ViewData["option"] as string;
+    }
+
     string search = ViewData["search"] as string;
 }
 @model IEnumerable<Product>
@@ -28,19 +33,100 @@
     </div>
 </header>
 <div class="row mb-4">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <p>
             Hiển thị @ViewData["minProduct"]-@ViewData["maxDisplayProduct"] trong số @ViewData["maxProduct"] sản phẩm </ p >
     </div>
-    <div class="col-md-6 text-md-end">
-        <select onchange="directIntoNewPage(this.value);" class="form-select d-inline-block w-auto">
+    <div class="col-md-8 text-md-end">
+        <label class="form-label" for="category">Loại</label>
+        <select id="category" onchange="directIntoCategory(this.value);" class="form-select d-inline-block w-auto">
+
+            @if (categoryId == -1)
+            {
+                <option selected value="-1">Tất cả</option>
+            } else
+            {
+                <option value="-1">Tất cả</option>
+            }
+
+            @if (categoryId == 1)
+            {
+                <option selected value="1">Bát</option>
+            } else
+            {                
+                <option value="1">Bát</option>
+            }
+
+            @if (categoryId == 2)
+            {
+                <option selected value="2">Đĩa</option>
+            } else
+            {
+                <option value="2">Đĩa</option>
+            }
+
+            @if (categoryId == 3)
+            {
+                <option selected value="3">Cốc</option>
+            } else
+            {
+                <option value="3">Cốc</option>
+            }
+
+            @if (categoryId == 4)
+            {
+                <option selected value="4">Bộ</option>
+            } else
+            {
+                <option value="4">Bộ</option>
+            }
+        </select>
+         <select onchange="directIntoNewPage(this.value);" class="form-select d-inline-block w-auto ml-3">
+            @if (option.Equals("default"))
+            {
+            <option selected value="default">Sắp xếp theo mặc định</option>
+            } else
+            {
             <option value="default">Sắp xếp theo mặc định</option>
+            }
+
+            @if (option.Equals("asc"))
+            {
+            <option selected value="asc">Giá: Thấp đến cao</option>
+            } else
+            {
             <option value="asc">Giá: Thấp đến cao</option>
+            }
+
+            @if (option.Equals("desc"))
+            {
+                <option selected value="desc">Giá: Cao đến thấp</option>
+            } else
+            {
             <option value="desc">Giá: Cao đến thấp</option>
+            }
+
+            @if (option.Equals("new"))
+            {
+            <option selected value="new">Mới nhất</option>
+                
+            } else
+            {
             <option value="new">Mới nhất</option>
+                
+            }
+            @if (option.Equals("old"))
+            {
+                
+            <option selected value="old">Cũ nhất</option>
+            } else
+            {
             <option value="old">Cũ nhất</option>
+                
+            }
         </select>
     </div>
+
 </div>
 
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -58,62 +144,6 @@
             </div>
         </div>
     }
-
-    @* <div class="col">
-    <div class="card product-card h-100">
-    <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát mì ramen">
-    <div class="card-body">
-    <h5 class="card-title">Bát mì ramen</h5>
-    <p class="card-text">Bát lớn hoàn hảo cho món mì ramen nóng hổi của bạn.</p>
-    <p class="card-text"><strong>300.000₫</strong></p>
-    <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
-    </div>
-    </div>
-    </div>
-    <div class="col">
-    <div class="card product-card h-100">
-    <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bộ bát đa năng">
-    <div class="card-body">
-    <h5 class="card-title">Bộ bát đa năng</h5>
-    <p class="card-text">Bộ 4 bát đa năng với các kích cỡ khác nhau cho mọi nhu cầu.</p>
-    <p class="card-text"><strong>500.000₫</strong></p>
-    <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
-    </div>
-    </div>
-    </div>
-    <div class="col">
-    <div class="card product-card h-100">
-    <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát salad gỗ">
-    <div class="card-body">
-    <h5 class="card-title">Bát salad gỗ</h5>
-    <p class="card-text">Bát salad bằng gỗ tự nhiên, mang lại vẻ đẹp rustic cho bàn ăn.</p>
-    <p class="card-text"><strong>350.000₫</strong></p>
-    <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
-    </div>
-    </div>
-    </div>
-    <div class="col">
-    <div class="card product-card h-100">
-    <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát súp miso">
-    <div class="card-body">
-    <h5 class="card-title">Bát súp miso</h5>
-    <p class="card-text">Bát súp miso truyền thống với nắp đậy, giữ súp nóng lâu hơn.</p>
-    <p class="card-text"><strong>200.000₫</strong></p>
-    <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
-    </div>
-    </div>
-    </div>
-    <div class="col">
-    <div class="card product-card h-100">
-    <img src="/placeholder.svg?height=200&width=300" class="card-img-top product-image" alt="Bát đựng gia vị">
-    <div class="card-body">
-    <h5 class="card-title">Bát đựng gia vị</h5>
-    <p class="card-text">Bộ 3 bát nhỏ đựng gia vị, hoàn hảo cho bàn ăn của bạn.</p>
-    <p class="card-text"><strong>150.000₫</strong></p>
-    <a href="#" class="btn btn-primary">Thêm vào giỏ hàng</a>
-    </div>
-    </div>
-    </div> *@
 </div>
 
 <nav aria-label="Page navigation" class="my-5">
@@ -161,9 +191,26 @@
         let currentUrl = new URL(window.location.href);
 
         if (value) {
+            currentUrl.searchParams.set('categoryId', @(categoryId == -1 ? "null" : categoryId));
             currentUrl.searchParams.set('option', value);
+            currentUrl.searchParams.set('page', 1);
+            currentUrl.searchParams.set('search', '');
         } else {
             currentUrl.searchParams.delete('option');
+        }
+
+        window.location.href = currentUrl;
+    }
+    function directIntoCategory(value) {
+        let currentUrl = new URL(window.location.href);
+
+        if (value) {
+            currentUrl.searchParams.set('option', '');
+            currentUrl.searchParams.set('categoryId', (value == '-1' ? '' : value));
+            currentUrl.searchParams.set('page', 1);
+            currentUrl.searchParams.set('search', '');
+        } else {
+            currentUrl.searchParams.delete('categoryId');
         }
 
         window.location.href = currentUrl;

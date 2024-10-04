@@ -67,15 +67,16 @@
 {
     <div class="order-card">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <h5>Đơn hàng #@order.OrderId</h5>
                 <p class="text-muted">Ngày đặt: @order.CreatedAt.GetValueOrDefault().ToString("d") lúc @order.CreatedAt.GetValueOrDefault().ToString("T")</p>
             </div>
-            <div class="col-md-5">
+            <div class="col-md-6">
                 <p><strong>Sản phẩm:</strong> @foreach (OrderItem orderItem in order.OrderItems) {
                     <span>@(orderItem.Product.Name) (x@(orderItem.Quantity))</span>
                 }
                 </p>
+                <p><strong>Nơi nhận:</strong> @order.Address</p>
                 <p><strong>Tổng giá:</strong> @order.TotalPrice.ToString("0")₫</p>
             </div>
             <div class="col-md-2">
@@ -92,50 +93,72 @@
                     <p class="order-status status-cancelled">@order.Status</p>
                 }
             </div>
-          @*   <div class="col-md-2">
-                <button class="btn btn-primary btn-sm">Chi tiết</button>
-            </div> *@
         </div>
     </div>
 }
+@if (Model.Count() == 0)
+{
+    <div class="d-flex" style="min-height:500px;">
+        <h1 class="m-auto">
+            <strong>Chưa có lịch sử</strong>
+        </h1>
+    </div>
+} else
+{
 
-
-<nav aria-label="Page navigation" class="my-5">
-    <ul class="pagination justify-content-center">
-        <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
-            <a class="page-link" href="#" onclick="GoPrevious();" tabindex="-1" aria-disabled="@(currentPage > 1 ? "false" : "true")">Trước</a>
-        </li>
-        @if (currentPage == 1)
-        {
-            <li class="page-item active" aria-current="page">
-                <a class="page-link" href="#">1</a>
+    <nav aria-label="Page navigation" class="my-5">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                <a class="page-link" href="#" onclick="GoPrevious();" tabindex="-1" aria-disabled="@(currentPage > 1 ? "false" : "true")">Trước</a>
             </li>
-            @for (int index = 2; index <= Math.Min(5, maxPage); index++)
+            @if (currentPage == 1)
             {
-                <li class="page-item"><a class="page-link" onclick="GoTo(@index)" href="#">@index</a></li>
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="#">1</a>
+                </li>
+                @for (int index = 2; index <= Math.Min(5, maxPage); index++)
+                {
+                    <li class="page-item"><a class="page-link" onclick="GoTo(@index)" href="#">@index</a></li>
+                }
             }
-        }
-        else if (currentPage == maxPage)
-        {
-            @for (int index = maxPage - 5; index < maxPage; index++)
+            else if (currentPage == maxPage)
             {
-                <li class="page-item"><a class="page-link" onclick="GoTo(@index)" href="#">@index</a></li>
+                @for (int index = maxPage - 5; index < maxPage; index++)
+                {
+                    <li class="page-item"><a class="page-link" onclick="GoTo(@index)" href="#">@index</a></li>
+                }
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="#">@maxPage</a>
+                </li>
             }
-            <li class="page-item active" aria-current="page">
-                <a class="page-link" href="#">@maxPage</a>
-            </li>
-        }
-        else
-        {
-            <li class="page-item"><a class="page-link" onclick="GoTo(@(currentPage-1)" href="#">@(currentPage - 1)</a></li>
+            else
+            {
+                <li class="page-item"><a class="page-link" onclick="GoTo(@(currentPage-1)" href="#">@(currentPage - 1)</a></li>
 
-            <li class="page-item active" aria-current="page">
-                <a class="page-link" href="#">@currentPage</a>
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="#">@currentPage</a>
+                </li>
+                <li class="page-item"><a class="page-link" onclick="GoTo(@(currentPage+1))" href="#">@(currentPage + 1)</a></li>
+            }
+            <li class="page-item  @(currentPage >= maxPage ? "disabled" : "")">
+                <a class="page-link" href="#" onclick="GoNext();" aria-disabled="@(currentPage == maxPage?"true":"false")">Sau</a>
             </li>
-            <li class="page-item"><a class="page-link" onclick="GoTo(@(currentPage+1))" href="#">@(currentPage + 1)</a></li>
-        }
-        <li class="page-item  @(currentPage >= maxPage ? "disabled" : "")">
-            <a class="page-link" href="#" onclick="GoNext();" aria-disabled="@(currentPage == maxPage?"true":"false")">Sau</a>
-        </li>
-    </ul>
-</nav>
+        </ul>
+    </nav>
+
+}
+
+<script>
+    function GoNext() {
+        let newUrl = `/History?page=@(currentPage + 1)`;
+        window.location.href = newUrl;
+    }
+    function GoPrevious() {
+        let newUrl = `/History?page=@(currentPage - 1)`;
+        window.location.href = newUrl;
+    }
+    function GoTo(pageNumber) {
+        let newUrl = `/History?page=${pageNumber}`;
+        window.location.href = newUrl;
+    }
+</script>

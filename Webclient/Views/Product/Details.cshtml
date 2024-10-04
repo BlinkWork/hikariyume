@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Chi tiết sản phẩm";
     List<Product> related = (List<Product>)ViewData["relatedProducts"];
+    Boolean canReview = (Boolean)ViewData["canReview"];
 }
 @model Product
 
@@ -46,7 +47,7 @@
 
     .review-card {
         border: 1px solid #e0e0e0;
-        border-radius: 8px;
+        /* border-radius: 8px; */
         padding: 15px;
         margin-bottom: 15px;
     }
@@ -85,7 +86,7 @@
     </div>
 </div>
 
-<section class="mt-5">
+<section class="mt-5 form-control">
     <h2 class="mb-4">Chi tiết sản phẩm</h2>
     <div class="row">
         <div class="col-md-6">
@@ -111,40 +112,131 @@
                 <h5>Xuất sứ</h5>
                 <p>@Model.Origin</p>
             }
-            </div>
         </div>
-    </section>
-
-    <section class="mt-5">
-        <h2 class="mb-4">Đánh giá từ khách hàng</h2>
-        <div id="reviewPart" class="row">
-        </div>
-        <div class="row">
-            <button id="seeMores" class="btn btn-light w-100 border-dark">Xem thêm</button>
-        </div>
-    </section>
-
-    <section class="mt-5">
-        <h2 class="mb-4">Các sản phẩm liên quan</h2>
-        <div class="row">
-            @foreach (Product product in related)
-        {
-            <div class="col-6 col-md-3 mb-4">
-                <div class="card">
-                    <img src="/img/@product.Image" class="card-img-top related-product-img" alt="@product.Name">
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text">@product.Price.ToString("0")₫</p>
-                        <a href="/Product/Details?id=@product.ProductId" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-        }
     </div>
 </section>
+<div class="row mt-3">
+    <div class="col-md-8">
+
+        <div class="form-control">
+            @if (canReview)
+            {
+                <section id="selfReview" class="mt-5 ml-3 mr-3 mb-3">
+                    <h2 class="mb-1">Đánh giá từ bạn</h2>
+                    <div class="d-flex">
+                        <label class="form-label" for="userRating">Chất lượng của sản phẩm: </label>
+                        <div class="star-rating mb-2" style="margin-left:.5rem;" id="userRating">
+                            <i class="bi bi-star" data-value="1"></i>
+                            <i class="bi bi-star" data-value="2"></i>
+                            <i class="bi bi-star" data-value="3"></i>
+                            <i class="bi bi-star" data-value="4"></i>
+                            <i class="bi bi-star" data-value="5"></i>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <textarea id="reviewContent" class="form-control"></textarea>
+                        <button onclick="submitReview()" class="btn btn-warning h-100" style="margin-left:.5rem;">Đăng</button>
+                    </div>
+                </section>
+            }
+            <section class="form-control">
+                <h2 class="mb-4">Đánh giá từ khách hàng</h2>
+                <div id="reviewPart" class="row">
+                </div>
+                <div class="row">
+                    <button id= "seeMores" class="btn btn-light w-100 border-dark">Xem thêm</button>
+                </div>
+            </section>
+        </div>
+
+
+    </div>
+
+    <div class="col-md-4">
+
+        <section class="form-control">
+            <h3 class="mb-4">Các sản phẩm liên quan</h3>
+            <div class="col">
+                @if (related != null && related.Count() > 0)
+                {
+                    foreach (Product product in related)
+                    {
+                        <div class="mb-2">
+                            <div class="card">
+                                <img src="/img/@product.Image" class="card-img-top related-product-img" alt="@product.Name">
+                                <div class="card-body">
+                                    <h5 class="card-title">@product.Name</h5>
+                                    <p class="card-text">@product.Price.ToString("0")₫</p>
+                                    <a href="/Product/Details?id=@product.ProductId" class="btn btn-outline-primary w-100">Xem chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </section>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
 <script>
+    let selectedRating = 0;
+let userid = @(Context.Session.GetString("UserId") != null ? Context.Session.GetString("UserId") : "null");
+
+    $('#userRating i').on('mouseenter', function () {
+        let hoverValue = $(this).data('value');
+        $('#userRating i').removeClass('bi-star-fill').addClass('bi-star');
+        for (let i = 1; i <= hoverValue; i++) {
+            $(`#userRating i[data-value=${i}]`).removeClass('bi-star').addClass('bi-star-fill');
+        }
+    });
+
+    $('#userRating').on('mouseleave', function () {
+        $('#userRating i').removeClass('bi-star-fill').addClass('bi-star');
+        for (let i = 1; i <= selectedRating; i++) {
+            $(`#userRating i[data-value=${i}]`).removeClass('bi-star').addClass('bi-star-fill');
+        }
+    });
+
+    $('#userRating i').on('click', function () {
+        selectedRating = $(this).data('value');
+        console.log("Selected Rating: " + selectedRating);
+    });
+
+    function submitReview() {
+        if (userid == null) {
+            return;
+        }
+        let review = {
+            UserId: parseInt(userid),
+            ProductId: @Model.ProductId,
+            Rating: selectedRating,
+            Comment: $.trim($("#reviewContent").val())
+        };
+        if (selectedRating == 0) {
+            toastr.error('Bạn phải đánh giá chất lượng sản phẩm', 'Lỗi');
+            return;
+        }
+        $.ajax({
+            url: '/Product/PostReview',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(review),
+            success: function (response) {
+                toastr.success('Bạn đã đánh giá thành công!', 'Thành công');
+                $("#reviewPart").empty();
+                $("#selfReview").empty();
+                currentPage = 0;
+                loadMoreReviews();
+            },
+            error: function (xhr, status, error) {
+                toastr.error(`Không thể đánh giá do ${xhr.responseText}`, 'Lỗi');
+            }
+        });
+    }
+
     function addItemToCart() {
         if ($("#quantity").val() == "") {
             toastr.error(`Số lượng tối thiểu là 1`, 'Lỗi');
@@ -204,23 +296,25 @@
             type: 'GET',
             data: { pId: pId, page: currentPage + 1 },
             success: function (reviews) {
+                if (reviews.length == 0) {
+                     $('#reviewPart').append(`<h3>Chưa có đánh giá</h3>`);
+                }
                 reviews.forEach(function (review) {
 
                     const reviewDate = new Date(review.createdAt);
                     const reviewDateInVN = formatDateTime(reviewDate);
                     const stars = generateStars(review.rating);
-                    const reviewHtml = `
-                                        <div class="review-card">
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <h5 class="mb-0">${review.user.fullName || 'Ẩn danh'}</h5>
-                                                <small class="text-muted">${reviewDateInVN}</small>
-                                            </div>
-                                            <div class="star-rating mb-2">
-                                                ${stars}
-                                            </div>
-                                            <p>${review.comment || 'Không bình luận.'}</p>
-                                        </div>
-                                    `;
+                    const reviewHtml = `<div class="review-card">
+                                                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                            <h5 class="mb-0">${review.userFullname || 'Ẩn danh'}</h5>
+                                                                            <small class="text-muted">${reviewDateInVN}</small>
+                                                                        </div>
+                                                                        <div class="star-rating align-items-center mb-2 d-flex">
+                                                                            <span style="margin-right:.5rem;color:cadetblue;">Đánh giá: </span>
+                                                                            ${stars}
+                                                                        </div>
+                                                                        <p>${review.comment || 'Không bình luận.'}</p>
+                                                                    </div>`;
                     $('#reviewPart').append(reviewHtml);
                 });
                 currentPage++;

@@ -14,6 +14,7 @@ namespace Webclient.Models
         public int OrderId { get; set; }
         public int? UserId { get; set; }
         public decimal TotalPrice { get; set; }
+        public string Address { get; set; } = null!;
         public string Status { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
 

@@ -14,11 +14,7 @@ namespace Webclient.Controllers
         {
             return View();
         }
-        [HttpPost]
-        public async Task<IActionResult> Edit()
-        {
-            return Ok();
-        }
+
         public IActionResult Login()
         {
 
@@ -43,6 +39,7 @@ namespace Webclient.Controllers
                 }
 
                 HttpContext.Session.SetString("UserId", user.UserId.ToString());
+                HttpContext.Session.SetString("UserName", user.Username);
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 HttpContext.Session.SetString("UserRole", user.Role);
 
@@ -177,7 +174,11 @@ namespace Webclient.Controllers
             {
                 int id = int.Parse(HttpContext.Session.GetString("UserId"));
 
+                String address = context.Users.FirstOrDefault(u => u.UserId == id).Address;
+
                 List<Cart> carts = context.Carts.Where(p => p.UserId == id).Include(c => c.Product).ToList();
+
+                ViewData["Address"] = address;
                 return View(carts);
             }
             catch (Exception ex)
@@ -239,6 +240,8 @@ namespace Webclient.Controllers
                 int id = int.Parse(HttpContext.Session.GetString("UserId"));
                 using (var context = new HikariYumeContext())
                 {
+                    User user = context.Users.FirstOrDefault(u => u.UserId == id);
+
                     // Get cart items for the user
                     var cartItems = context.Carts.Where(c => c.UserId == id).Include(p => p.Product).ToList();
 
@@ -252,10 +255,11 @@ namespace Webclient.Controllers
                         UserId = id,
                         TotalPrice = cartItems.Sum(c => c.Quantity * c.Product.Price), // calculate total price
                         Status = "Đang chờ", // Default status
-                        CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.Now,
+                        Address = user.Address
                     };
                     context.Orders.Add(order);
-                    context.SaveChanges();  
+                    context.SaveChanges();
 
                     // Create OrderItems based on the cart items
                     foreach (var cartItem in cartItems)
@@ -270,10 +274,9 @@ namespace Webclient.Controllers
                         context.OrderItems.Add(orderItem);
                     }
 
-                    // Save the new OrderItems
+
                     context.SaveChanges();
 
-                    // Remove the cart items for the user
                     context.Carts.RemoveRange(cartItems);
                     context.SaveChanges();
                 }
@@ -301,7 +304,7 @@ namespace Webclient.Controllers
                     .Include(o => o.OrderItems).ThenInclude(o => o.Product).Skip((page - 1) * 5).Take(5).ToList();
 
                 ViewData["currentPage"] = page;
-                int maxPage = context.Orders.Count() / 5 + (context.Orders.Count() % 5 == 0 ? 1 : 0);
+                int maxPage = context.Orders.Where(o => o.UserId == userId).Count() / 5 + (context.Orders.Where(o => o.UserId == userId).Count() % 5 == 0 ? 1 : 0);
                 ViewData["maxPage"] = maxPage;
 
                 return View(list);
@@ -316,12 +319,60 @@ namespace Webclient.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Login");
+            return RedirectToAction("Index","Home");
         }
         [HttpGet]
         public IActionResult Information()
         {
-            return View();
+            try
+            {
+                int userId = int.Parse(HttpContext.Session.GetString("UserId"));
+                User user = context.Users.FirstOrDefault(u => u.UserId == userId);
+                if (user == null)
+                {
+                    return RedirectToAction("Login");
+                }
+                UserChangeInformation userChangeInformation = new UserChangeInformation()
+                {
+                    UserId = userId,
+                    Address = user.Address,
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    PhoneNumber = user.PhoneNumber,
+                    Username = user.Username
+                };
+                return View(userChangeInformation);
+            }
+            catch (ArgumentNullException)
+            {
+                return RedirectToAction("Login");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit([FromBody] UserChangeInformation information)
+        {
+            User user = context.Users.FirstOrDefault(u => u.UserId == information.UserId);
+            if (user != null)
+            {
+                user.Address = information.Address;
+                user.FullName = information.FullName;
+                user.PhoneNumber = information.PhoneNumber;
+                user.Username = information.Username;
+                try
+                {
+                    context.Update(user);
+                    await context.SaveChangesAsync();
+                    return Ok();
+                }
+                catch
+                {
+                    return BadRequest("Tên username đã có người dùng");
+                }
+            }
+            else
+            {
+                return NotFound("Không tìm thấy người dùng");
+            }
         }
     }
 }
