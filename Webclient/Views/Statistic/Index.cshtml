@@ -1,0 +1,34 @@
+﻿@model IEnumerable<Webclient.Models.Product>
+@{
+    ViewData["Title"] = "Product List";
+    Layout = "_ManageLayout";
+}
+<h2>Product List</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td><img src="@item.Image" alt="@item.Name" width="50" /></td>
+                <td>@item.Name</td>
+                <td>@item.Price</td>
+                <td>
+                    <a href="@Url.Action("Edit", new { id = item.ProductId })">Edit</a> |
+                    <a href="@Url.Action("Details", new { id = item.ProductId })">Details</a> |
+                    <a href="@Url.Action("Delete", new { id = item.ProductId })">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Create")" class="btn btn-primary">Create New Product</a>

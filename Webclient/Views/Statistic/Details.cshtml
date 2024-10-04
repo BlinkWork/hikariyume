@@ -1,0 +1,27 @@
+﻿@model Webclient.Models.Product
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<h2>Product Details</h2>
+
+<div>
+    <h4>@Model.Name</h4>
+    <dl>
+        <dt>
+            Price
+        </dt>
+        <dd>
+            @Model.Price
+        </dd>
+        <dt>
+            Stock Quantity
+        </dt>
+        <dd>
+            @Model.StockQuantity
+        </dd>
+    </dl>
+</div>
+
+<a asp-action="Index">Back to List</a>
