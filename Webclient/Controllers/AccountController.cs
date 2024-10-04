@@ -110,7 +110,7 @@ namespace Webclient.Controllers
             smtpServer.Port = 587;
             smtpServer.Credentials = new NetworkCredential(
                                             "quannmhe171875@fpt.edu.vn",
-                                            "ckvt sxdv ypmr pjls"
+                                            Environment.GetEnvironmentVariable("GMAIL_PASSWORD")
                                             );
             smtpServer.EnableSsl = true;
 
