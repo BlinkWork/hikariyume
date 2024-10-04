@@ -43,6 +43,21 @@
         height: 150px;
         object-fit: cover;
     }
+
+    .review-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .star-rating {
+        color: #ffc107;
+    }
+
+        .star-rating .bi-star-fill, .bi-star-half, .bi-star {
+            font-size: 0.8rem;
+        }
 </style>
 
 <div class="row">
@@ -74,26 +89,45 @@
     <h2 class="mb-4">Chi tiết sản phẩm</h2>
     <div class="row">
         <div class="col-md-6">
-            <h5>Kích thước</h5>
-            <p>@Model.Description</p>
-            @* <p>Diameter: 5 inches (12.7 cm)<br>Height: 2.5 inches (6.35 cm)</p> *@
-            <h5>Chất liệu</h5>
-            <p></p>
-            @* <p>High-quality ceramic with a glossy finish</p> *@
+            @if (Model.Size != null)
+            {
+                <h5>Kích thước</h5>
+                <p>@Model.Size</p>
+            }
+            @if (Model.Material != null)
+            {
+                <h5>Chất liệu</h5>
+                <p>@Model.Material</p>
+            }
         </div>
         <div class="col-md-6">
-            @*    <h5>Care Instructions</h5>
-            <p>Dishwasher safe, but hand washing is recommended for longevity. Microwave safe for reheating.</p> *@
-            <h5>Xuất sứ</h5>
-            <p>Nhập khẩu.</p>
+            @if (Model.Age != null)
+            {
+                <h5>Độ mới</h5>
+                <p>@Model.Age</p>
+            }
+            @if (Model.Origin != null)
+            {
+                <h5>Xuất sứ</h5>
+                <p>@Model.Origin</p>
+            }
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="mt-5">
-    <h2 class="mb-4">Các sản phẩm liên quan</h2>
-    <div class="row">
-        @foreach (Product product in related)
+    <section class="mt-5">
+        <h2 class="mb-4">Đánh giá từ khách hàng</h2>
+        <div id="reviewPart" class="row">
+        </div>
+        <div class="row">
+            <button id="seeMores" class="btn btn-light w-100 border-dark">Xem thêm</button>
+        </div>
+    </section>
+
+    <section class="mt-5">
+        <h2 class="mb-4">Các sản phẩm liên quan</h2>
+        <div class="row">
+            @foreach (Product product in related)
         {
             <div class="col-6 col-md-3 mb-4">
                 <div class="card">
@@ -123,14 +157,14 @@
 
         let item = {
             ProductId: @Model.ProductId,
-            Quantity: $("#quantity").val() 
+            Quantity: $("#quantity").val()
         };
 
         $.ajax({
             url: '/Account/AddToCart',
             type: 'POST',
-            contentType: 'application/json', 
-            data: JSON.stringify(item), 
+            contentType: 'application/json',
+            data: JSON.stringify(item),
             success: function (response) {
                 toastr.success('Đã thêm mặt hàng vào giỏ!', 'Thành công');
             },
@@ -139,5 +173,103 @@
             }
         });
     }
+
+    // $(document).ready(function () {
+    let pId = @Model.ProductId;
+    let currentPage = 0;
+    loadMoreReviews();
+    function checkRemainingReviews() {
+        $.ajax({
+            url: '/Product/GetRemainReview',
+            type: 'GET',
+            data: { pId: pId, page: currentPage },
+            success: function (amount) {
+
+                if (parseInt(amount) > 0) {
+                    $('#seeMores').show();
+                } else {
+                    $('#seeMores').hide();
+                }
+
+            },
+            error: function () {
+                toastr.error('Không thể kiểm đếm được số lượng đánh giá.');
+            }
+        });
+    }
+
+    function loadMoreReviews() {
+        $.ajax({
+            url: '/Product/GetReview',
+            type: 'GET',
+            data: { pId: pId, page: currentPage + 1 },
+            success: function (reviews) {
+                reviews.forEach(function (review) {
+
+                    const reviewDate = new Date(review.createdAt);
+                    const reviewDateInVN = formatDateTime(reviewDate);
+                    const stars = generateStars(review.rating);
+                    const reviewHtml = `
+                                        <div class="review-card">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <h5 class="mb-0">${review.user.fullName || 'Ẩn danh'}</h5>
+                                                <small class="text-muted">${reviewDateInVN}</small>
+                                            </div>
+                                            <div class="star-rating mb-2">
+                                                ${stars}
+                                            </div>
+                                            <p>${review.comment || 'Không bình luận.'}</p>
+                                        </div>
+                                    `;
+                    $('#reviewPart').append(reviewHtml);
+                });
+                currentPage++;
+                checkRemainingReviews();
+
+            },
+            error: function () {
+                toastr.error('Đã xảy ra vấn đề khi load đánh giá.', 'Lỗi');
+            }
+        });
+    }
+
+    function formatDateTime(date) {
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'chiều' : 'sáng';
+
+        const formattedHours = hours % 12 || 12;
+        const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+
+        const formattedDay = day < 10 ? '0' + day : day;
+        const formattedMonth = month < 10 ? '0' + month : month;
+
+        return `${formattedHours}:${formattedMinutes} ${ampm} ${formattedDay}/${formattedMonth}/${year}`;
+    }
+
+
+    function generateStars(rating) {
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                starsHtml += '<i class="bi bi-star-fill"></i>';
+            } else if (i === Math.ceil(rating) && !Number.isInteger(rating)) {
+                starsHtml += '<i class="bi bi-star-half"></i>';
+            } else {
+                starsHtml += '<i class="bi bi-star"></i>';
+            }
+        }
+        return starsHtml;
+    }
+
+    $('#seeMores').on('click', function () {
+        loadMoreReviews();
+    });
+    // });
+
 
 </script>

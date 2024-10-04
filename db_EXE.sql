@@ -15,7 +15,7 @@ CREATE TABLE Users (
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    full_name VARCHAR(255),
+    full_name NVARCHAR(255),
     address TEXT,
     phone_number VARCHAR(15),
     role VARCHAR(10) CHECK (role IN ('admin', 'user')) NOT NULL,
@@ -25,13 +25,18 @@ CREATE TABLE Users (
 CREATE TABLE Categories (
     category_id INT PRIMARY KEY IDENTITY(1,1),
     name NVARCHAR(100) NOT NULL,
-    description TEXT
+    description NVARCHAR(255)
 );
 CREATE TABLE Products (
     product_id INT PRIMARY KEY IDENTITY(1,1),
     image VARCHAR(100) NOT NULL,
     name NVARCHAR(255) NOT NULL,
-    description NVARCHAR(255),
+    --description NVARCHAR(255),
+	size NVARCHAR(255),
+	origin NVARCHAR(255),
+	color NVARCHAR(255),
+	age NVARCHAR(255),
+	material NVARCHAR(255),
     price DECIMAL(10, 2) NOT NULL,
     stock_quantity INT NOT NULL,
     category_id INT,
@@ -63,7 +68,7 @@ CREATE TABLE Reviews (
     user_id INT,
     product_id INT,
     rating INT CHECK (rating BETWEEN 1 AND 5) NOT NULL,
-    comment TEXT,
+    comment NVARCHAR(255),
     created_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (product_id) REFERENCES Products(product_id)
@@ -107,31 +112,35 @@ VALUES
 
 INSERT INTO Categories (name, description)
 VALUES 
-(N'Bát', 'Các loại bát gốm sứ cao cấp'),
-(N'Đĩa', 'Các loại đĩa gốm sứ đa dạng'),
-(N'Cốc', 'Các loại cốc đa dạng');
+(N'Bát', N'Các loại bát gốm sứ cao cấp'),
+(N'Đĩa', N'Các loại đĩa gốm sứ đa dạng'),
+(N'Cốc', N'Các loại cốc đa dạng'),
+(N'Bộ', N'Các bộ trang bị đa dạng');
 
-INSERT INTO Products (name, [image], description, price, stock_quantity, category_id)
+INSERT INTO Products (image, name, size, origin, color, age, material, price, stock_quantity, category_id)
 VALUES 
-(N'Bát sứ', 'batsu1.jpg', N'Kích thước 16 cm',65000,10, 1), 
-(N'Bát sứ 2','batsu2.jpg',N'Kích thước 14 cm',35000,10,1),
-(N'Đĩa thuyền hoa','diathuyenhoa.jpg',N'Kích thước 22x10cm',50000, 10,2),
-(N'Đĩa gốm','diagom.jpg',N'Kích thước 20cm',80000,10,2),
-(N'Đĩa họa tiết','diahoatiet.jpg',N'Kích thước 12cm',30000,10,2);
+('product1.jpg', N'Đĩa gốm', N'20-25 cm, chiều cao 3-5 cm', N'Nhật bản', N'Màu xanh rêu nhạt', N'Sản phẩm mới, còn nguyên vẹn với độ bóng', NULL, 40000.00, 20, 2),
+('product2.jpg', N'Cốc Gốm Thủ Công', N'Đường kính miệng cốc 8-10 cm, Chiều cao 8-10 cm', N'Nhật bản', N'Màu trắng sữa nhạt', N'Sản phẩm còn mới, bề mặt và mép cốc nhẵn mịn, không có vết xước hay khuyết điểm', N'Gốm thủ công', 60000.00, 20, 3),
+('product3.jpg', N'Đĩa gốm trắng trơn', N'Đường kính đĩa 15-18cm, Chiều cao 2-3 cm', N'Nhật bản', N'Trắng', N'Sản phẩm mới, không trầy xước', N'Gốm', 60000.00, 20, 2),
+('product4.jpg', N'Đĩa Gốm Nhật Bản - Hồng Nhạt', N'16.5x 12 cm', N'Nhật bản', N'Hồng nhạt', N'Sản phẩm còn mới', NULL, 70000.00, 20, 2),
+('product5.jpg', N'Chén Gốm Thủ Công Họa Tiết Vân Nứt', N'12x5 cm', N'Nhật bản', N'Màu trắng sữa', N'Sản phẩm còn mới', NULL, 75000.00, 20, 3),
+('product6.jpg', N'Chén Gốm Thủ Công Họa Tiết Vân Nứt Và Đáy Gỗ', N'12x5 cm', N'Nhật bản', N'Màu trắng sữa', N'Sản phẩm còn mới', NULL, 55000.00, 20, 3),
+('product7.jpg', N'Cốc Gốm Thủ Công Họa Tiết Xanh Nâu', N'8x10 cm', N'Nhật bản', N'Sự kết hợp hài hòa giữa màu xanh nhạt và nâu sẫm', N'Sản phẩm còn mới', NULL, 55000.00, 20, 3),
+('product8.jpg', N'Đĩa Gốm Vuông Họa Tiết Màu Xanh Lá', N'16.5x12 cm', N'Nhật bản', N'Màu xanh lá', N'Sản phẩm còn mới', NULL, 50000.00, 20, 2),
+('product9.jpg', N'Đĩa Gốm Hình Ấm Trà', N'12x9', N'Nhật bản', N'Màu trắng ngà', N'Sản phẩm còn mới', NULL, 110000.00, 20, 4),
+('product10.jpg', N'Bát Gốm Trắng Viền Xanh', N'15x6 cm', N'Nhật bản', N'Màu trắng ngà', N'Sản phẩm còn mới', NULL, 40000.00, 20, 1),
+('product11.jpg', N'Đĩa Gốm thuyền Hoa Văn Hồng', N'22x10 cm', N'Nhật bản', N'Màu trắng ngà', N'Sản phẩm còn mới', NULL, 50000.00, 20, 2),
+('product12.jpg', N'Đĩa Gốm Oval Viền Đen', N'25x15', N'Nhật bản', N'Màu trắng ngà', N'Sản phẩm còn mới', NULL, 60000.00, 20, 2),
+('product13.jpg', N'Đĩa Gốm Oval Hoa Văn Cá', N'22x12 cm', N'Nhật bản', N'Nền trắng', N'Sản phẩm còn mới', NULL, 60000.00, 20, 2),
+--('product14.jpg', N'Đĩa Gốm Tròn Hoa Văn', N'18 cm', N'Nhật bản', N'Màu xám nhạt', N'Sản phẩm còn mới', NULL, 65000.00, 20, 2),
+('product14.jpg', N'Đĩa Gốm Tròn Màu Xanh Viền Chữ "DELICIOUS"', N'25 cm', N'Nhật bản', N'Màu xanh dương', N'Sản phẩm còn mới', NULL, 60000.00, 20, 2),
+('product15.jpg', N'Bộ Bát Gốm Hoa Văn Trang Nhã', N'12x6 cm', N'Nhật bản', N'Màu xám nhạt', N'Sản phẩm còn mới', NULL, 35000.00, 20, 4);
 
 INSERT INTO Orders (user_id, total_price, status)
 VALUES 
 (2, 125000, N'Đang giao'),
 (3, 80000, N'Hoàn thành'),
 (2, 175000, N'Đang giao');
-
-INSERT INTO Order_Items (order_id, product_id, quantity, price)
-VALUES 
-(1, 1, 2, 50000),
-(1, 2, 1, 75000),
-(2, 4, 1, 80000),
-(3, 3, 1, 120000),
-(3, 1, 1, 50000);
 
 INSERT INTO Reviews (user_id, product_id, rating, comment)
 VALUES 

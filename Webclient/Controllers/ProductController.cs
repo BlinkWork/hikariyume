@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using Webclient.Models;
 
 namespace Webclient.Controllers
@@ -63,14 +65,15 @@ namespace Webclient.Controllers
             }
             ViewData["option"] = option;
             ViewData["minProduct"] = products.Count > 0 ? 1 : 0;
-            ViewData["maxProduct"] = products.Count;
-            products = products.Skip((page - 1) * 6).Take(6).ToList();
-            ViewData["maxDisplayProduct"] = products.Count;
-            int maxPage = products.Count / 6 ;
+            ViewData["maxProduct"] = products.Count; 
+            int maxPage = products.Count / 6;
             if (products.Count % 6 != 0)
             {
                 maxPage++;
             }
+            products = products.Skip((page - 1) * 6).Take(6).ToList();
+            ViewData["maxDisplayProduct"] = products.Count;
+          
             ViewData["currentPage"] = page;
             ViewData["maxPage"] = maxPage;
             return View(products);
@@ -89,7 +92,27 @@ namespace Webclient.Controllers
                 relatedProduct.Remove(p);
             }
             ViewData["relatedProducts"] = relatedProduct.Take(4).ToList();
+
             return View(p);
+        }
+
+        public IActionResult GetReview(int pId, int page = 1)
+        {
+            if (context.Products.FirstOrDefault(p => p.ProductId == pId) == null)
+            {
+                return NotFound();
+            }
+            List<Review> reviews = context.Reviews.Where(r => r.ProductId == pId).Include(r => r.User).Skip((page - 1) * 5).Take(5).ToList();
+            return Ok(reviews);
+        }
+        public IActionResult GetRemainReview(int pId, int page)
+        {
+            if (context.Products.FirstOrDefault(p => p.ProductId == pId) == null)
+            {
+                return NotFound();
+            }
+            int amount = context.Reviews.Where(r => r.ProductId == pId).Skip(page * 5).Count();
+            return Ok(amount);
         }
     }
 }

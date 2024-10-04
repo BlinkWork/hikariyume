@@ -51,7 +51,7 @@
                 <img src="/img/@product.Image" class="card-img-top product-image" alt="Bát cơm gốm">
                 <div class="card-body">
                     <h5 class="card-title">@product.Name</h5>
-                    <p class="card-text">@product.Description</p>
+                    <p class="card-text">Thêm lúc @product.CreatedAt.GetValueOrDefault().ToString("d")</p>
                     <p class="card-text"><strong>@product.Price.ToString("0")₫</strong></p>
                     <a href="/Product/Details?id=@product.ProductId" class="btn btn-primary w-100">Xem thêm chi tiết</a>
                 </div>

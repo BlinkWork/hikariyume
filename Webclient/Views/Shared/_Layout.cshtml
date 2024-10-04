@@ -62,11 +62,11 @@
                 <a href="/Home" class="fs-4 fw-semibold">
                     <img src="/img/exeLogo.png" width="64" height="64" />光夢 <span class="text-danger">Hiraki Yume</span>
                 </a>
-            <nav class="d-none d-md-flex gap-3">
+            @* <nav class="d-none d-md-flex gap-3">
                 <a href="/Product?categoryId=1" class="text-dark text-decoration-none">Bát</a>
                 <a href="/Product?categoryId=2" class="text-dark text-decoration-none">Đĩa</a>
                 <a href="/Product?categoryId=3" class="text-dark text-decoration-none">Cốc</a>
-            </nav>
+            </nav> *@
             <div class="d-flex gap-3">
                 <div class="search-container position-relative">
                     <button class="btn btn-outline-secondary p-2" id="searchButton"><i class="bi bi-search"></i></button>
@@ -83,6 +83,7 @@
                             <i class="bi bi-person-circle"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="/Account/Information">Thông tin cá nhân</a></li>
                             <li><a class="dropdown-item" href="/Account/History">Lịch sử</a></li>
                             <li><a class="dropdown-item" href="/Account/Logout">Thoát</a></li>
                         </ul>

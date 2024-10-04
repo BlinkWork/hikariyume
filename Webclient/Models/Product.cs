@@ -17,7 +17,11 @@ namespace Webclient.Models
         public int ProductId { get; set; }
         public string Image { get; set; } = null!;
         public string Name { get; set; } = null!;
-        public string? Description { get; set; }
+        public string? Size { get; set; }
+        public string? Origin { get; set; }
+        public string? Color { get; set; }
+        public string? Age { get; set; }
+        public string? Material { get; set; }
         public decimal Price { get; set; }
         public int StockQuantity { get; set; }
         public int? CategoryId { get; set; }

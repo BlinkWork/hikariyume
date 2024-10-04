@@ -15,7 +15,7 @@ namespace Webclient.SubscribeTableDependencies
         public void SubscribeTableDependency()
         {
             //string connectionString = "server=DESKTOP-5TITJRQ\\MSSQLSERVER01;database=HikariYume;user=sa;password=123;TrustServerCertificate=true";
-            string connectionString = "server =(local); database = HikariYume;uid=sa;pwd=123;";
+            string connectionString = "server =(local); database = HikariYume;uid=sa;pwd=sa;";
             tableDependency = new SqlTableDependency<Order>(connectionString, "Orders");
             tableDependency.OnChanged += TableDependency_OnChanged;
             tableDependency.OnError += TableDependency_OnError;

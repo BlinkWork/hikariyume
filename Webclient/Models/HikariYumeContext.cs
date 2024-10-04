@@ -70,7 +70,7 @@ namespace Webclient.Models
                 entity.Property(e => e.CategoryId).HasColumnName("category_id");
 
                 entity.Property(e => e.Description)
-                    .HasColumnType("text")
+                    .HasMaxLength(255)
                     .HasColumnName("description");
 
                 entity.Property(e => e.Name)
@@ -165,29 +165,45 @@ namespace Webclient.Models
             {
                 entity.Property(e => e.ProductId).HasColumnName("product_id");
 
+                entity.Property(e => e.Age)
+                    .HasMaxLength(255)
+                    .HasColumnName("age");
+
                 entity.Property(e => e.CategoryId).HasColumnName("category_id");
+
+                entity.Property(e => e.Color)
+                    .HasMaxLength(255)
+                    .HasColumnName("color");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasColumnName("created_at")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.Description)
-                    .HasMaxLength(255)
-                    .HasColumnName("description");
-
                 entity.Property(e => e.Image)
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("image");
 
+                entity.Property(e => e.Material)
+                    .HasMaxLength(255)
+                    .HasColumnName("material");
+
                 entity.Property(e => e.Name)
                     .HasMaxLength(255)
                     .HasColumnName("name");
 
+                entity.Property(e => e.Origin)
+                    .HasMaxLength(255)
+                    .HasColumnName("origin");
+
                 entity.Property(e => e.Price)
                     .HasColumnType("decimal(10, 2)")
                     .HasColumnName("price");
+
+                entity.Property(e => e.Size)
+                    .HasMaxLength(255)
+                    .HasColumnName("size");
 
                 entity.Property(e => e.StockQuantity).HasColumnName("stock_quantity");
 
@@ -202,7 +218,7 @@ namespace Webclient.Models
                 entity.Property(e => e.ReviewId).HasColumnName("review_id");
 
                 entity.Property(e => e.Comment)
-                    .HasColumnType("text")
+                    .HasMaxLength(255)
                     .HasColumnName("comment");
 
                 entity.Property(e => e.CreatedAt)
@@ -229,10 +245,10 @@ namespace Webclient.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasIndex(e => e.Email, "UQ__Users__AB6E6164BA27637E")
+                entity.HasIndex(e => e.Email, "UQ__Users__AB6E61644576F321")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Username, "UQ__Users__F3DBC5721E0C4EEB")
+                entity.HasIndex(e => e.Username, "UQ__Users__F3DBC5725E2A1A72")
                     .IsUnique();
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");
@@ -253,7 +269,6 @@ namespace Webclient.Models
 
                 entity.Property(e => e.FullName)
                     .HasMaxLength(255)
-                    .IsUnicode(false)
                     .HasColumnName("full_name");
 
                 entity.Property(e => e.Password)

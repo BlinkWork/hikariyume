@@ -318,5 +318,10 @@ namespace Webclient.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
+        [HttpGet]
+        public IActionResult Information()
+        {
+            return View();
+        }
     }
 }
