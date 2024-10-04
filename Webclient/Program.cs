@@ -1,4 +1,8 @@
-using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using Webclient.Hubs;
+using Webclient.MiddlewareExtensions;
+using Webclient.Models;
+using Webclient.SubscribeTableDependencies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,13 +16,25 @@ builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
+
+// Add SignalR
+builder.Services.AddSingleton<ChartHub>();
+builder.Services.AddSingleton<SubscribeOrderTableDependency>();
+builder.Services.AddSignalR();
+
+// Add DbContext before building the app
+var connectionString = builder.Configuration.GetConnectionString("MyCnn") ?? throw new InvalidOperationException("Connection string DbContext not found.");
+builder.Services.AddDbContext<HikariYumeContext>(options =>
+{
+    options.UseSqlServer(connectionString);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -28,6 +44,9 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
 app.UseAuthorization();
+
+app.MapHub<ChartHub>("/chartHub");
+app.UseOrderTableDependency();
 
 app.MapControllerRoute(
     name: "default",

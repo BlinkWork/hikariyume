@@ -21,4 +21,9 @@ namespace Webclient.Models
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
     }
+    public class OrderForGraph
+    {
+        public decimal TotalPrice { get; set; }
+        public DateTime OrderTime { get; set; }
+    }
 }
