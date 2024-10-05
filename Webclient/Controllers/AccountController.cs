@@ -4,6 +4,10 @@ using System.Net.Mail;
 using System.Net;
 using Webclient.Models;
 using Microsoft.Win32;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Webclient.Controllers
 {
@@ -65,36 +69,41 @@ namespace Webclient.Controllers
                     ModelState.AddModelError("Email", "Email đã được sử dụng");
                     return View(user);
                 }
-                string emailVerificationToken = Guid.NewGuid().ToString();
+
+                string emailVerificationToken = GenerateJwtToken(user);
 
                 SendVerificationEmail(user.Email, emailVerificationToken);
 
-                HttpContext.Session.SetString("PendingUserEmail", user.Email);
-                HttpContext.Session.SetString("PendingUserPassword", user.Password);
-                HttpContext.Session.SetString("PendingUserFullName", user.FullName);
-                HttpContext.Session.SetString("PendingUserUserName", user.UserName);
-                HttpContext.Session.SetString("PendingUserPhoneNumber", user.PhoneNumber);
-                HttpContext.Session.SetString("PendingUserAddress", user.Address);
-                HttpContext.Session.SetString("EmailVerificationToken", emailVerificationToken);
-                HttpContext.Session.SetString("TokenCreatedAt", DateTime.Now.ToString());
-
                 ViewBag.Message = "Vui lòng kiểm tra email để xác thực tài khoản.";
-
                 return View();
             }
             return View();
         }
+        private string GenerateJwtToken(RegisterModel user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("my_secret_key_hehehe_by_me_quan_32_ky_tu_cc");
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+            new Claim("Email", user.Email),
+            new Claim("Password", user.Password),
+            new Claim("FullName", user.FullName),
+            new Claim("Username", user.UserName),
+            new Claim("PhoneNumber", user.PhoneNumber),
+            new Claim("Address", user.Address)
+                }),
+                Expires = DateTime.UtcNow.AddMinutes(15),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
 
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
         private void SendVerificationEmail(string email, string token)
         {
-            string sessionToken = HttpContext.Session.GetString("EmailVerificationToken");
-            string sessionTokenCreatedAt = HttpContext.Session.GetString("TokenCreatedAt");
-            if (sessionToken != null || sessionTokenCreatedAt != null)
-            {
-                return;
-            }
-            string verificationLink = Url.Action("VerifyEmail", "Account",
-                new { token = token }, Request.Scheme);
+            string verificationLink = Url.Action("VerifyEmail", "Account", new { token = token }, Request.Scheme);
 
             MailMessage mail = new MailMessage();
             mail.From = new MailAddress("quannmhe171875@fpt.edu.vn");
@@ -107,65 +116,67 @@ namespace Webclient.Controllers
             smtpServer.Port = 587;
             smtpServer.Credentials = new NetworkCredential(
                                             "quannmhe171875@fpt.edu.vn",
-                                            Environment.GetEnvironmentVariable("GMAIL_PASSWORD")
-                                            );
+                                            Environment.GetEnvironmentVariable("GMAIL_PASSWORD"));
             smtpServer.EnableSsl = true;
 
             smtpServer.Send(mail);
         }
 
+
         [HttpGet]
         public IActionResult VerifyEmail(string token)
         {
-            string sessionToken = HttpContext.Session.GetString("EmailVerificationToken");
-            string sessionTokenCreatedAt = HttpContext.Session.GetString("TokenCreatedAt");
+            var userClaims = ValidateJwtToken(token);
 
-            if (sessionToken == null || sessionTokenCreatedAt == null)
+            if (userClaims == null)
             {
-                ViewBag.Message = "chưa có yêu cầu";
+                ViewBag.Message = "Token không hợp lệ hoặc đã hết hạn.";
                 return View("Register");
             }
 
-            DateTime tokenCreatedAt = DateTime.Parse(sessionTokenCreatedAt);
-            if (DateTime.Now.Subtract(tokenCreatedAt).TotalMinutes > 15)
+            User newUser = new User
             {
-                ViewBag.Message = "Token đã hết hạn. Vui lòng đăng ký lại.";
-                Console.WriteLine(ViewBag.Message);
-                return View("Register");
-            }
+                Email = userClaims.FindFirst("Email").Value,
+                Password = userClaims.FindFirst("Password").Value,
+                Username = userClaims.FindFirst("Username").Value,
+                FullName = userClaims.FindFirst("FullName").Value,
+                Address = userClaims.FindFirst("Address").Value,
+                PhoneNumber = userClaims.FindFirst("PhoneNumber").Value,
+                CreatedAt = DateTime.Now,
+                Role = "user"
+            };
 
-            if (sessionToken == token)
-            {
-                User newUser = new User
-                {
-                    Email = HttpContext.Session.GetString("PendingUserEmail"),
-                    Password = HttpContext.Session.GetString("PendingUserPassword"),
-                    Username = HttpContext.Session.GetString("PendingUserUserName"),
-                    FullName = HttpContext.Session.GetString("PendingUserFullName"),
-                    Address = HttpContext.Session.GetString("PendingUserAddress"),
-                    PhoneNumber = HttpContext.Session.GetString("PendingUserPhoneNumber"),
-                    CreatedAt = DateTime.Now,
-                    Role = "user"
-                };
+            context.Users.Add(newUser);
+            context.SaveChanges();
 
-                context.Users.Add(newUser);
-                context.SaveChanges();
-
-                HttpContext.Session.Remove("PendingUserEmail");
-                HttpContext.Session.Remove("PendingUserPassword");
-                HttpContext.Session.Remove("PendingUserFullName");
-                HttpContext.Session.Remove("EmailVerificationToken");
-                HttpContext.Session.Remove("PendingUserUserName");
-                HttpContext.Session.Remove("PendingUserAddress");
-                HttpContext.Session.Remove("PendingUserPhoneNumber");
-
-
-                ViewBag.Message = "Tài khoản của bạn đã được xác thực thành công! Vui lòng đăng nhập";
-                return View("Login");
-            }
-            ViewBag.Message = "Mã xác thực không hợp lệ.";
-            return View("Register");
+            ViewBag.Message = "Tài khoản của bạn đã được xác thực thành công! Vui lòng đăng nhập";
+            return View("Login");
         }
+
+        private ClaimsPrincipal ValidateJwtToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("my_secret_key_hehehe_by_me_quan_32_ky_tu_cc");
+
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+
+                return principal;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
 
 
         public IActionResult Cart()

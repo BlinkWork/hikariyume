@@ -19,6 +19,7 @@
 	  <PackageReference Include="SqlTableDependency" Version="8.5.8" />
 	  <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
 	  <PackageReference Include="EPPlus" Version="7.2.1" />
+	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.1" />
   </ItemGroup>
 
   <ItemGroup>
