@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -14,9 +15,17 @@ namespace Webclient.Controllers
         {
             _context = context;
         }
+        public bool IsAdmin()
+        {
+            return HttpContext.Session.GetString("UserRole") == "admin";
+        }
 
         public IActionResult Dashboard()
         {
+            if (!IsAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
             decimal totalMonth = _context.Orders
                 .Where(o => o.Status == "Hoàn thành" && o.CreatedAt.HasValue &&
                     o.CreatedAt.Value.Month == DateTime.Now.Month &&
@@ -37,12 +46,20 @@ namespace Webclient.Controllers
 
         public IActionResult Index()
         {
+            if (!IsAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var products = _context.Products.ToList();
             return View(products);
         }
 
         public IActionResult Create()
         {
+            if (!IsAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
 
@@ -62,6 +79,10 @@ namespace Webclient.Controllers
 
         public IActionResult Edit(int? id)
         {
+            if (!IsAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -110,6 +131,10 @@ namespace Webclient.Controllers
 
         public IActionResult Delete(int? id)
         {
+            if (!IsAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
