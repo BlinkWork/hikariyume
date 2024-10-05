@@ -52,7 +52,7 @@ namespace Webclient.Controllers
         {
             if (ModelState.IsValid)
             {
-                product.CreatedAt = DateTime.Now; 
+                product.CreatedAt = DateTime.Now;
                 _context.Add(product);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
@@ -88,7 +88,7 @@ namespace Webclient.Controllers
             {
                 try
                 {
-                    product.CreatedAt = DateTime.Now; 
+                    product.CreatedAt = DateTime.Now;
                     _context.Update(product);
                     _context.SaveChanges();
                 }
@@ -115,7 +115,13 @@ namespace Webclient.Controllers
                 return NotFound();
             }
 
-            var product = _context.Products.FirstOrDefault(m => m.ProductId == id);
+            var product = _context.Products
+                .Include(p => p.Reviews)    
+                .Include(p => p.Carts)     
+                .Include(p => p.OrderItems)  
+                .Include(p => p.Wishlists)   
+                .FirstOrDefault(m => m.ProductId == id);
+
             if (product == null)
             {
                 return NotFound();
@@ -128,9 +134,19 @@ namespace Webclient.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            var product = _context.Products.Find(id);
+            var product = _context.Products
+                .Include(p => p.Reviews)   
+                .Include(p => p.Carts)    
+                .Include(p => p.OrderItems) 
+                .Include(p => p.Wishlists)  
+                .FirstOrDefault(m => m.ProductId == id);
+
             if (product != null)
             {
+                _context.Reviews.RemoveRange(product.Reviews);
+                _context.Carts.RemoveRange(product.Carts);
+                _context.OrderItems.RemoveRange(product.OrderItems);
+                _context.Wishlists.RemoveRange(product.Wishlists);
                 _context.Products.Remove(product);
                 _context.SaveChanges();
             }
