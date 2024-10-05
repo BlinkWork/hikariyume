@@ -59,6 +59,24 @@
         .star-rating .bi-star-fill, .bi-star-half, .bi-star {
             font-size: 0.8rem;
         }
+
+    #selfReview {
+        background-color: #f9f9f9;
+        border-radius: 0.5rem;
+    }
+
+    .card {
+        border: 1px solid #e0e0e0;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #reviewContent {
+        resize: none;
+        min-height: 100px; 
+        border: 1px solid #ced4da; 
+        border-radius: 0.5rem; 
+    }
 </style>
 
 <div class="row">
@@ -68,25 +86,16 @@
     <div class="col-md-6">
         <h1 class="mb-4">@Model.Name</h1>
         <p class="price mb-3">Giá: @Model.Price.ToString("0")₫</p>
-        <p class="mb-4">Tình trạng: @(Model.StockQuantity > 0 ? "Còn hàng" : "Hết hàng")</p>
-        @* <div class="mb-4">
-        <h5>Features:</h5>
-        <ul>
-        <li>Made from high-quality ceramic</li>
-        <li>Microwave and dishwasher safe</li>
-        <li>Perfect size for individual servings</li>
-        <li>Available in multiple colors</li>
-        </ul>
-        </div> *@
-        <div class="mb-4">
-            <label for="quantity" class="form-label">Số lượng:</label>
-            <input id="quantity" class="form-control w-25" type="number" min="1" max="@Model.StockQuantity" />
-        </div>
-        <button onclick="addItemToCart()" class="btn btn-add-to-cart btn-lg">Thêm vào Giỏ</button>
+        <p class="mb-3">Tình trạng: @(Model.StockQuantity > 0 ? "Còn hàng" : "Hết hàng")</p>
+        <p class="mb-4">Số lượng: 1</p>
+        @if (Model.StockQuantity > 0)
+        {
+            <button onclick="addItemToCart()" class="btn btn-add-to-cart btn-lg">Thêm vào Giỏ</button>
+        }
     </div>
 </div>
 
-<section class="mt-5 form-control">
+<section class="mt-5 card p-3">
     <h2 class="mb-4">Chi tiết sản phẩm</h2>
     <div class="row">
         <div class="col-md-6">
@@ -118,10 +127,10 @@
 <div class="row mt-3">
     <div class="col-md-8">
 
-        <div class="form-control">
+        <div>
             @if (canReview)
             {
-                <section id="selfReview" class="mt-5 ml-3 mr-3 mb-3">
+               @*  <section id="selfReview" class="mt-5 ml-3 mr-3 mb-3">
                     <h2 class="mb-1">Đánh giá từ bạn</h2>
                     <div class="d-flex">
                         <label class="form-label" for="userRating">Chất lượng của sản phẩm: </label>
@@ -138,14 +147,34 @@
                         <textarea id="reviewContent" class="form-control"></textarea>
                         <button onclick="submitReview()" class="btn btn-warning h-100" style="margin-left:.5rem;">Đăng</button>
                     </div>
+                </section> *@
+                <section id="selfReview" class="mb-3">
+                    <div class="card p-3">
+                        <h2 class="mb-3 text-center">Đánh giá từ bạn</h2>
+                        <div class="mb-4 d-flex">
+                            <label class="form-label" for="userRating">Chất lượng của sản phẩm:</label>
+                            <div style="margin-left:0.5rem;" class="star-rating mb-2" id="userRating">
+                                <i class="bi bi-star-fill" data-value="1"></i>
+                                <i class="bi bi-star-fill" data-value="2"></i>
+                                <i class="bi bi-star-fill" data-value="3"></i>
+                                <i class="bi bi-star-fill" data-value="4"></i>
+                                <i class="bi bi-star-fill" data-value="5"></i>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <textarea id="reviewContent" class="form-control" placeholder="Chia sẻ cảm nhận của bạn..."></textarea>
+                            <button onclick="submitReview()" class="btn btn-warning h-100 ms-2">Đăng</button>
+                        </div>
+                    </div>
                 </section>
             }
-            <section class="form-control">
-                <h2 class="mb-4">Đánh giá từ khách hàng</h2>
-                <div id="reviewPart" class="row">
+            <section class="card p-3">
+                <h2 class="mb-4 mt-4">Đánh giá từ khách hàng</h2>
+                <div id="reviewPart">
                 </div>
                 <div class="row">
-                    <button id= "seeMores" class="btn btn-light w-100 border-dark">Xem thêm</button>
+                    @* <button id= "seeMores" class="btn btn-light w-100 border-dark">Xem thêm</button> *@
                 </div>
             </section>
         </div>
@@ -155,7 +184,7 @@
 
     <div class="col-md-4">
 
-        <section class="form-control">
+        <section class="card p-2">
             <h3 class="mb-4">Các sản phẩm liên quan</h3>
             <div class="col">
                 @if (related != null && related.Count() > 0)
@@ -182,8 +211,8 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
 <script>
-    let selectedRating = 0;
-let userid = @(Context.Session.GetString("UserId") != null ? Context.Session.GetString("UserId") : "null");
+    let selectedRating = 5;
+    let userid = @(Context.Session.GetString("UserId") != null ? Context.Session.GetString("UserId") : "null");
 
     $('#userRating i').on('mouseenter', function () {
         let hoverValue = $(this).data('value');
@@ -216,7 +245,7 @@ let userid = @(Context.Session.GetString("UserId") != null ? Context.Session.Get
             Comment: $.trim($("#reviewContent").val())
         };
         if (selectedRating == 0) {
-            toastr.error('Bạn phải đánh giá chất lượng sản phẩm', 'Lỗi');
+            toastr.error('Bạn phải đánh giá chất lượng sản phẩm tối thiểu 1 sao', 'Lỗi');
             return;
         }
         $.ajax({
@@ -238,18 +267,9 @@ let userid = @(Context.Session.GetString("UserId") != null ? Context.Session.Get
     }
 
     function addItemToCart() {
-        if ($("#quantity").val() == "") {
-            toastr.error(`Số lượng tối thiểu là 1`, 'Lỗi');
-            return;
-        }
-        if ($("#quantity").val() > @Model.StockQuantity) {
-            toastr.error(`Số lượng đặt không thể vượt quá tồn kho`, 'Lỗi');
-            return;
-        }
 
         let item = {
-            ProductId: @Model.ProductId,
-            Quantity: $("#quantity").val()
+            ProductId: @Model.ProductId
         };
 
         $.ajax({
@@ -266,29 +286,28 @@ let userid = @(Context.Session.GetString("UserId") != null ? Context.Session.Get
         });
     }
 
-    // $(document).ready(function () {
     let pId = @Model.ProductId;
     let currentPage = 0;
     loadMoreReviews();
-    function checkRemainingReviews() {
-        $.ajax({
-            url: '/Product/GetRemainReview',
-            type: 'GET',
-            data: { pId: pId, page: currentPage },
-            success: function (amount) {
+    // function checkRemainingReviews() {
+    //     $.ajax({
+    //         url: '/Product/GetRemainReview',
+    //         type: 'GET',
+    //         data: { pId: pId, page: currentPage },
+    //         success: function (amount) {
 
-                if (parseInt(amount) > 0) {
-                    $('#seeMores').show();
-                } else {
-                    $('#seeMores').hide();
-                }
+    //             if (parseInt(amount) > 0) {
+    //                 $('#seeMores').show();
+    //             } else {
+    //                 $('#seeMores').hide();
+    //             }
 
-            },
-            error: function () {
-                toastr.error('Không thể kiểm đếm được số lượng đánh giá.');
-            }
-        });
-    }
+    //         },
+    //         error: function () {
+    //             toastr.error('Không thể kiểm đếm được số lượng đánh giá.');
+    //         }
+    //     });
+    // }
 
     function loadMoreReviews() {
         $.ajax({
@@ -297,14 +316,14 @@ let userid = @(Context.Session.GetString("UserId") != null ? Context.Session.Get
             data: { pId: pId, page: currentPage + 1 },
             success: function (reviews) {
                 if (reviews.length == 0) {
-                     $('#reviewPart').append(`<h3>Chưa có đánh giá</h3>`);
+                    $('#reviewPart').append(`<h3 style="margin-left:1rem;">Chưa có đánh giá</h3>`);
                 }
                 reviews.forEach(function (review) {
 
                     const reviewDate = new Date(review.createdAt);
                     const reviewDateInVN = formatDateTime(reviewDate);
                     const stars = generateStars(review.rating);
-                    const reviewHtml = `<div class="review-card">
+                    const reviewHtml = `<div class="card p-1">
                                                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                                                             <h5 class="mb-0">${review.userFullname || 'Ẩn danh'}</h5>
                                                                             <small class="text-muted">${reviewDateInVN}</small>
@@ -313,12 +332,12 @@ let userid = @(Context.Session.GetString("UserId") != null ? Context.Session.Get
                                                                             <span style="margin-right:.5rem;color:cadetblue;">Đánh giá: </span>
                                                                             ${stars}
                                                                         </div>
-                                                                        <p>${review.comment || 'Không bình luận.'}</p>
+                                                                        <p>Nội dung: ${review.comment || 'Không bình luận.'}</p>
                                                                     </div>`;
                     $('#reviewPart').append(reviewHtml);
                 });
-                currentPage++;
-                checkRemainingReviews();
+                // currentPage++;
+                // checkRemainingReviews();
 
             },
             error: function () {
@@ -360,10 +379,8 @@ let userid = @(Context.Session.GetString("UserId") != null ? Context.Session.Get
         return starsHtml;
     }
 
-    $('#seeMores').on('click', function () {
-        loadMoreReviews();
-    });
+    // $('#seeMores').on('click', function () {
+    //     loadMoreReviews();
     // });
-
 
 </script>

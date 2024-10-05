@@ -193,6 +193,12 @@ namespace Webclient.Controllers
             {
                 int id = int.Parse(HttpContext.Session.GetString("UserId"));
                 cart.UserId = id;
+                cart.Quantity = 1;
+                Cart find = context.Carts.FirstOrDefault(c => c.ProductId == cart.ProductId);
+                if (find != null)
+                {
+                    return BadRequest("Giỏ hàng đã tồn tại vật phẩm này");
+                }
                 context.Carts.Add(cart);
                 await context.SaveChangesAsync();
                 return Ok();
@@ -240,6 +246,7 @@ namespace Webclient.Controllers
                 int id = int.Parse(HttpContext.Session.GetString("UserId"));
                 using (var context = new HikariYumeContext())
                 {
+
                     User user = context.Users.FirstOrDefault(u => u.UserId == id);
 
                     // Get cart items for the user
@@ -249,6 +256,18 @@ namespace Webclient.Controllers
                     {
                         throw new Exception("giỏ hàng đang trống.");
                     }
+
+
+                    // Check if product is still valid or not
+                    foreach (Cart cart in cartItems)
+                    {
+                        var product = context.Products.FirstOrDefault(p => p.ProductId == cart.ProductId);
+                        if (product != null && product.StockQuantity == 0)
+                        {
+                            throw new Exception($"mặt hàng {product.Name} đã hết.");
+                        }
+                    }
+
                     // Create a new Order
                     var order = new Order
                     {
@@ -272,11 +291,13 @@ namespace Webclient.Controllers
                             Price = cartItem.Product.Price
                         };
                         context.OrderItems.Add(orderItem);
+                        Product p = context.Products.FirstOrDefault(p => p.ProductId == cartItem.ProductId);
+                        p.StockQuantity = 0;
+                        context.Products.Update(p);
                     }
 
 
                     context.SaveChanges();
-
                     context.Carts.RemoveRange(cartItems);
                     context.SaveChanges();
                 }
@@ -298,10 +319,36 @@ namespace Webclient.Controllers
             {
                 int userId = int.Parse(HttpContext.Session.GetString("UserId"));
 
-
                 var list = context.Orders
-                    .Where(o => o.UserId == userId)
-                    .Include(o => o.OrderItems).ThenInclude(o => o.Product).Skip((page - 1) * 5).Take(5).ToList();
+                    .Where(o => o.UserId == userId).Include(o => o.OrderItems)
+                    .Select(o => new OrderForHistory
+                    {
+                        OrderId = o.OrderId,
+                        Address = o.Address,
+                        CreatedAt = o.CreatedAt,
+                        Status = o.Status,
+                        TotalPrice = o.TotalPrice,
+                        orderItemForHistories = context.OrderItems
+                        .Where(oi => oi.OrderId == o.OrderId)
+                        .Include(oi => oi.Product)
+                        .Select(oi => new OrderItemForHistory
+                        {
+                            Product = new ProductForHistory
+                            {
+                                ProductId = oi.ProductId.GetValueOrDefault(),
+                                Price = oi.Product.Price,
+                                Age = oi.Product.Age,
+                                Color = oi.Product.Color,
+                                Image = oi.Product.Image,
+                                Material = oi.Product.Material,
+                                Name = oi.Product.Name,
+                                Origin = oi.Product.Origin,
+                                Size = oi.Product.Size,
+                            },
+                            Quantity = oi.Quantity,
+                            HasReview = (o.Status.Equals("Hoàn thành")) && (context.Reviews.FirstOrDefault(r => r.ProductId == oi.ProductId && r.UserId == userId) != null)
+                        }).ToList(),
+                    }).Skip((page - 1) * 5).Take(5).ToList();
 
                 ViewData["currentPage"] = page;
                 int maxPage = context.Orders.Where(o => o.UserId == userId).Count() / 5 + (context.Orders.Where(o => o.UserId == userId).Count() % 5 == 0 ? 1 : 0);
@@ -319,7 +366,7 @@ namespace Webclient.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Index", "Home");
         }
         [HttpGet]
         public IActionResult Information()

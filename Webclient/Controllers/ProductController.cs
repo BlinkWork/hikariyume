@@ -97,7 +97,15 @@ namespace Webclient.Controllers
             {
                 int userId = int.Parse(HttpContext.Session.GetString("UserId"));
 
-                ViewData["canReview"] = context.Reviews.FirstOrDefault(r => r.ProductId == id && r.UserId == userId) == null;
+                OrderItem orderItem = context.OrderItems.Include(oi => oi.Order).FirstOrDefault(oi => oi.ProductId == p.ProductId && oi.Order.UserId == userId);
+
+                if ((orderItem != null) && (orderItem.Order.Status.Equals("Hoàn thành")) && (context.Reviews.FirstOrDefault(r => r.UserId == userId && r.ProductId == orderItem.ProductId) == null))
+                {
+                    ViewData["canReview"] = true;
+                } else
+                {
+                    ViewData["canReview"] = false;
+                }
             }
             catch
             {

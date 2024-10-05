@@ -15,7 +15,17 @@ namespace Webclient.SubscribeTableDependencies
         public void SubscribeTableDependency()
         {
             //string connectionString = "server=DESKTOP-5TITJRQ\\MSSQLSERVER01;database=HikariYume;user=sa;password=123;TrustServerCertificate=true";
-            string connectionString = "server =(local); database = HikariYume;uid=sa;pwd=sa;";
+
+            // Assuming you have set up a ConfigurationBuilder
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            IConfiguration configuration = builder.Build();
+
+            // Extract the connection string
+            string connectionString = configuration.GetConnectionString("MyCnn");
+
             tableDependency = new SqlTableDependency<Order>(connectionString, "Orders");
             tableDependency.OnChanged += TableDependency_OnChanged;
             tableDependency.OnError += TableDependency_OnError;

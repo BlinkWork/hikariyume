@@ -3,7 +3,7 @@
     int maxPage = (int)ViewData["maxPage"];
     int currentPage = (int)ViewData["currentPage"];
 }
-@model IEnumerable<Order>
+@model IEnumerable<OrderForHistory>
 <style>
     body {
         font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -62,8 +62,34 @@
             background-color: #c82333;
             border-color: #bd2130;
         }
+
+    .product-card {
+        display: flex;
+        align-items: center;
+        border: 1px solid #e0e0e0;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background-color: #f8f9fa;
+    }
+
+    .product-image {
+        width: 100px; /* Adjust width as needed */
+        height: 100px; /* Adjust height as needed */
+        object-fit: cover; /* Keep the aspect ratio of images */
+        border-radius: 0.5rem;
+        margin-right: 1rem; /* Space between image and text */
+    }
+
+    .product-info {
+        flex-grow: 1; /* Allow this div to take up remaining space */
+    }
+
+    .custom-Modal {
+        max-width: 800px;
+    }
 </style>
-@foreach(Order order in Model)
+@foreach (OrderForHistory order in Model)
 {
     <div class="order-card">
         <div class="row">
@@ -71,31 +97,55 @@
                 <h5>Đơn hàng #@order.OrderId</h5>
                 <p class="text-muted">Ngày đặt: @order.CreatedAt.GetValueOrDefault().ToString("d") lúc @order.CreatedAt.GetValueOrDefault().ToString("T")</p>
             </div>
-            <div class="col-md-6">
-                <p><strong>Sản phẩm:</strong> @foreach (OrderItem orderItem in order.OrderItems) {
-                    <span>@(orderItem.Product.Name) (x@(orderItem.Quantity))</span>
-                }
+            <div class="col-md-5">
+                <p>
+                    <strong>Sản phẩm:</strong> @foreach (OrderItemForHistory orderItem in order.orderItemForHistories)
+                    {
+                        <span>@(orderItem.Product.Name) (x@(orderItem.Quantity))</span>
+                    }
                 </p>
                 <p><strong>Nơi nhận:</strong> @order.Address</p>
                 <p><strong>Tổng giá:</strong> @order.TotalPrice.ToString("0")₫</p>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3 d-flex align-items-lg-center">
                 @if (order.Status.Equals("Đang chờ") || order.Status.Equals("Đang giao"))
                 {
-                    <p class="order-status status-processing">@order.Status</p>
-                    
-                } else if (order.Status.Equals("Hoàn thành"))
-                {
-                    <p class="order-status status-delivered">@order.Status</p>
-                    
-                } else if (order.Status.Equals("Bị hủy"))
-                {
-                    <p class="order-status status-cancelled">@order.Status</p>
+                    <p class="order-status status-processing m-0">@order.Status</p>
+
                 }
+                else if (order.Status.Equals("Hoàn thành"))
+                {
+                    <p class="order-status status-delivered m-0">@order.Status</p>
+                }
+                else if (order.Status.Equals("Bị hủy"))
+                {
+                    <p class="order-status status-cancelled m-0">@order.Status</p>
+                }
+
+                <button style="margin-left:1.5rem;" type="button" data-bs-toggle="modal" data-bs-target="#orderModal" onclick="showOrderDetails(@order.OrderId)" class="btn btn-warning">Xem chi tiết</button>
+
             </div>
         </div>
     </div>
 }
+
+<div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderModalLabel">Chi tiết đơn hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="orderItemsContainer"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @if (Model.Count() == 0)
 {
     <div class="d-flex" style="min-height:500px;">
@@ -103,7 +153,8 @@
             <strong>Chưa có lịch sử</strong>
         </h1>
     </div>
-} else
+}
+else
 {
 
     <nav aria-label="Page navigation" class="my-5">
@@ -149,6 +200,64 @@
 }
 
 <script>
+    let ordersList = @Html.Raw(Json.Serialize(Model));
+
+
+    function showOrderDetails(orderId) {
+
+        $('#orderItemsContainer').empty();
+
+        var order = ordersList.find(function (o) {
+            return o.orderId === orderId;
+        });
+
+        if (order) {
+            order.orderItemForHistories.forEach(function (item) {
+                var productId = item.product.productId;
+
+                var itemCard = $('<div class="product-card"></div>');
+
+                var productImage = $('<img class="product-image" src="/img/' + item.product.image + '" alt="' + item.product.name + '">');
+                itemCard.append(productImage);
+
+                // Right side: product details
+                var productInfo = $('<div class="product-info"></div>');
+                productInfo.append('<h5>' + item.product.name + '</h5>');
+                if (item.product.size) {
+                    productInfo.append('<p><strong>Kích thước:</strong> ' + (item.product.size || 'N/A') + '</p>');
+                }
+                if (item.product.origin) {
+                    productInfo.append('<p><strong>Xuất sứ:</strong> ' + (item.product.origin || 'N/A') + '</p>');
+                }
+                if (item.product.color) {
+                    productInfo.append('<p><strong>Màu sắc:</strong> ' + (item.product.color || 'N/A') + '</p>');
+                }
+                if (item.product.age) {
+                    productInfo.append('<p><strong>Độ mới:</strong> ' + (item.product.age || 'N/A') + '</p>');
+                }
+                if (item.product.material) {
+                    productInfo.append('<p><strong>Chất liệu:</strong>' + item.product.material + '</p>');
+                }
+                // productInfo.append('<p><strong>Giá:</strong> ' + item.product.price.toFixed(2) + ' VND</p>');
+
+                itemCard.append(productInfo);
+
+                if (order.status === "Hoàn thành") {
+                    var buttonText = item.hasReview ? "Xem lại đánh giá" : "Đánh giá";
+                    var button = $('<a class="btn btn-primary"></a>')
+                        .text(buttonText)
+                        .attr('href', '/Product/Details?id=' + productId);
+
+                    itemCard.append(button);
+                }
+
+                $('#orderItemsContainer').append(itemCard);
+            });
+        } else {
+            $('#orderItemsContainer').append('<p>Đơn hàng vốn không tồn tại.</p>');
+        }
+    }
+
     function GoNext() {
         let newUrl = `/History?page=@(currentPage + 1)`;
         window.location.href = newUrl;
