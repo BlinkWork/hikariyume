@@ -46,7 +46,7 @@ app.UseSession();
 app.UseAuthorization();
 
 app.MapHub<ChartHub>("/chartHub");
-//app.UseOrderTableDependency();
+app.UseOrderTableDependency();
 
 app.MapControllerRoute(
     name: "default",

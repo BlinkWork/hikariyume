@@ -136,9 +136,3 @@ VALUES
 --('product14.jpg', N'Đĩa Gốm Tròn Hoa Văn', N'18 cm', N'Nhật bản', N'Màu xám nhạt', N'Sản phẩm còn mới', NULL, 65000.00, 20, 2),
 ('product14.jpg', N'Đĩa Gốm Tròn Màu Xanh Viền Chữ "DELICIOUS"', N'25 cm', N'Nhật bản', N'Màu xanh dương', N'Sản phẩm còn mới', NULL, 60000.00, 20, 2),
 ('product15.jpg', N'Bộ Bát Gốm Hoa Văn Trang Nhã', N'12x6 cm', N'Nhật bản', N'Màu xám nhạt', N'Sản phẩm còn mới', NULL, 35000.00, 20, 4);
-
-INSERT INTO Reviews (user_id, product_id, rating, comment)
-VALUES 
-(2, 1, 5, N'Bát sứ rất đẹp và chất lượng tốt!'),
-(3, 2, 4, N'Đĩa có hoa văn rất tinh tế.'),
-(2, 3, 5, N'Bình hoa thiết kế đẹp, mình rất thích.');

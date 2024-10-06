@@ -60,18 +60,46 @@ namespace Webclient.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
+            ViewData["categoryList"] = _context.Categories.Select(c => new Category
+            {
+                CategoryId = c.CategoryId,
+                Name = c.Name,
+            }).ToList();
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Product product)
+        public async Task<IActionResult> Create(Product product, IFormFile ImageFile)
         {
+            ModelState.Remove("Image");
+            if (ImageFile == null || !(ImageFile.ContentType == "image/jpeg" || ImageFile.ContentType == "image/png"))
+            {
+                ModelState.AddModelError("Image", "Please upload a valid image (JPG or PNG).");
+            }
+
             if (ModelState.IsValid)
             {
+                if (ImageFile != null && (ImageFile.ContentType == "image/jpeg" || ImageFile.ContentType == "image/png"))
+                {
+                    var fileName = Path.GetFileNameWithoutExtension(ImageFile.FileName);
+                    var extension = Path.GetExtension(ImageFile.FileName);
+                    var newFileName = $"{fileName}_{DateTime.Now.Ticks}{extension}";
+
+                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", newFileName);
+
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await ImageFile.CopyToAsync(stream);
+                    }
+
+                    product.Image = newFileName;
+                }
+
                 product.CreatedAt = DateTime.Now;
                 _context.Add(product);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -141,10 +169,10 @@ namespace Webclient.Controllers
             }
 
             var product = _context.Products
-                .Include(p => p.Reviews)    
-                .Include(p => p.Carts)     
-                .Include(p => p.OrderItems)  
-                .Include(p => p.Wishlists)   
+                .Include(p => p.Reviews)
+                .Include(p => p.Carts)
+                .Include(p => p.OrderItems)
+                .Include(p => p.Wishlists)
                 .FirstOrDefault(m => m.ProductId == id);
 
             if (product == null)
@@ -160,10 +188,10 @@ namespace Webclient.Controllers
         public IActionResult DeleteConfirmed(int id)
         {
             var product = _context.Products
-                .Include(p => p.Reviews)   
-                .Include(p => p.Carts)    
-                .Include(p => p.OrderItems) 
-                .Include(p => p.Wishlists)  
+                .Include(p => p.Reviews)
+                .Include(p => p.Carts)
+                .Include(p => p.OrderItems)
+                .Include(p => p.Wishlists)
                 .FirstOrDefault(m => m.ProductId == id);
 
             if (product != null)

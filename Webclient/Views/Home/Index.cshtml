@@ -22,6 +22,99 @@
         height: 12rem;
         object-fit: cover;
     }
+
+    .navbar-brand span {
+        color: #dc3545;
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+    }
+
+    .product-image {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+    }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+    .welcome-section {
+        background-color: #f8f4e6;
+        padding: 60px 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+
+    .welcome-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-title {
+        font-size: 3rem;
+        color: #4a4a4a;
+        margin-bottom: 30px;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 2px;
+    }
+
+        .welcome-title span {
+            color: #dc3545;
+        }
+
+    .welcome-card {
+        background-color: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+        .welcome-card .card-body {
+            padding: 40px;
+        }
+
+    .welcome-text {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #333;
+    }
+
+    .read-more-btn {
+        color: #dc3545;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+    }
+
+        .read-more-btn:hover {
+            color: #a71d2a;
+        }
+
+        .read-more-btn i {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .read-more-btn:hover i {
+            transform: translateX(5px);
+        }
 </style>
 <!-- Hero Section -->
 <section class="hero-section py-5 text-center text-white">
@@ -31,6 +124,91 @@
         <a href="/Product" class="btn btn-danger btn-lg">Mua sắm ngay</a>
     </div>
 </section>
+
+<section class="welcome-section card p-3 mt-5">
+    <div class="container welcome-content">
+        <h2 class="welcome-title">Chào mừng đến với <span>光夢 Hikari Yume</span></h2>
+        <div class="welcome-card card">
+            <div class="card-body">
+                <p class="welcome-text" id="introText">
+                    Tại 𝐇𝐢𝐤𝐚𝐫𝐢 𝐘𝐮𝐦𝐞, chúng mình tự hào giới thiệu những sản phẩm gốm sứ Nhật Bản tinh xảo, mang đậm văn hóa và nghệ thuật của xứ sở hoa anh đào. Mỗi món đồ không chỉ là một sản phẩm, mà là một tác phẩm nghệ thuật, chứa đựng tâm huyết và di sản văn hóa ngàn năm.
+                </p>
+                <div id="expandedText" class="collapse">
+                    <p class="welcome-text">
+                        Chúng mình cam kết cung cấp những sản phẩm gốm sứ chính hãng, với tiêu chuẩn chất lượng hoàn hảo từ nguyên liệu đến từng chi tiết tinh tế. Mỗi chiếc chén trà thanh lịch hay món gốm trang trí độc đáo đều mang trong mình một câu chuyện riêng, phản ánh sự khéo léo của người nghệ nhân và bản sắc văn hóa Nhật Bản.
+                    </p>
+                    <p class="welcome-text">
+                        Hãy để 𝐇𝐢𝐤𝐚𝐫𝐢 𝐘𝐮𝐦𝐞 thổi hồn vào không gian sống của bạn, mang đến sự sang trọng và ấm áp không thể nào quên!
+                    </p>
+                </div>
+                <a class="read-more-btn" data-bs-toggle="collapse" href="#expandedText" role="button" aria-expanded="false" aria-controls="expandedText">
+                    Đọc thêm <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Tại sao là chúng tôi?</h2>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">🍽️</div>
+                            <h3 class="card-title">Chất lượng uy tín</h3>
+                            <p class="card-text">Chúng mình cam kết chỉ mang đến sản phẩm gốm sứ Nhật Bản chính hãng, đảm bảo chất lượng từ nguyên liệu đến từng chi tiết sản xuất.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">🎎</div>
+                            <h3 class="card-title">Tinh hoa nghệ thuật</h3>
+                            <p class="card-text"> Sản phẩm tại Hikari Yume không chỉ đơn thuần là vật dụng hàng ngày mà còn là cầu nối đưa văn hóa và nghệ thuật Nhật Bản đến gần hơn với bạn.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Khám phá thêm về di sản Nhật Bản</h2>
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-4">
+                    <div class="video-container">
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/QCZJj_DVwEM?si=0iFerMdg2ecr40IW" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h3>Kỹ thuật trang trí hoa cúc Hirado</h3>
+                    <p>Đây là phần trình diễn của ông Ichiro Nakazato, một bậc thầy về kỹ thuật trang trí hoa cúc Hirado, một trong những kỹ thuật được sử dụng trong đồ gốm Mikawachi.</p>
+                    <a href="https://youtu.be/QCZJj_DVwEM?si=vJ0QtUUn5mK_BbRU" class="btn btn-primary">Xem chi tiết</a>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-4">
+                    <div class="video-container">
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/RhBMdVCWf1s?si=RQWZA7AxIVcNwVDl" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h3>Tạo hình trên gốm</h3>
+                    <p>Cận cảnh nghệ nhân làm gốm tạo hình trên gốm thực tế</p>
+                    <a href="https://www.youtube.com/watch?v=RhBMdVCWf1s" class="btn btn-primary">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</section>
+
+
+
 
 <!-- Featured Products -->
 <section class="py-5">
@@ -54,15 +232,3 @@
         </div>
     </div>
 </section>
-
-<!-- Newsletter -->
-@* <section class="bg-light py-5">
-    <div class="container text-center">
-        <h2 class="mb-4">Stay Updated</h2>
-        <p class="mb-4">Subscribe to our newsletter for exclusive offers and Japanese tableware inspiration</p>
-        <div class="d-flex justify-content-center">
-            <input type="email" class="form-control w-auto rounded-0" placeholder="Enter your email">
-            <button class="btn btn-danger rounded-0">Subscribe</button>
-        </div>
-    </div>
-</section> *@
