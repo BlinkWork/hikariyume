@@ -1,0 +1,19 @@
+﻿@{
+    Layout = "_ManageLayout";
+}
+@model Webclient.Models.User
+
+<h1>User Details</h1>
+
+<div>
+    <h4>Username: @Model.Username</h4>
+    <p>Email: @Model.Email</p>
+    <p>Full Name: @Model.FullName</p>
+    <p>Address: @Model.Address</p>
+    <p>Phone Number: @Model.PhoneNumber</p>
+    <p>Role: @Model.Role</p>
+    <p>Created At: @Model.CreatedAt?.ToString("g")</p>
+</div>
+
+<a asp-action="EditUser" asp-route-id="@Model.UserId" class="btn btn-warning">Edit</a>
+<a asp-action="User" class="btn btn-secondary">Back to Users</a>

@@ -1,0 +1,14 @@
+﻿@{
+    Layout = "_ManageLayout";
+}
+@model Webclient.Models.User
+
+<h1>Delete User</h1>
+
+<p>Are you sure you want to delete the user @Model.Username?</p>
+
+<form asp-action="DeleteUser" method="post">
+    <input type="hidden" asp-for="UserId" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="User" class="btn btn-secondary">Cancel</a>
+</form>

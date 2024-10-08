@@ -1,0 +1,28 @@
+﻿@{
+    Layout = "_ManageLayout";
+}
+@model Webclient.Models.Order
+
+<h1>Edit Order</h1>
+
+<form asp-action="EditOrder" method="post">
+    <input type="hidden" asp-for="OrderId" />
+    <div class="form-group">
+        <label>User</label>
+        <select asp-for="UserId" class="form-control" asp-items="@(new SelectList(ViewBag.Users, "UserId", "Username", Model.UserId))"></select>
+    </div>
+    <div class="form-group">
+        <label>Total Price</label>
+        <input asp-for="TotalPrice" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Address</label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Status</label>
+        <input asp-for="Status" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Order" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,14 @@
+﻿@{
+    Layout = "_ManageLayout";
+}
+@model Webclient.Models.Order
+
+<h1>Delete Order</h1>
+
+<p>Are you sure you want to delete the order @Model.OrderId?</p>
+
+<form asp-action="DeleteOrder" method="post">
+    <input type="hidden" asp-for="OrderId" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Order" class="btn btn-secondary">Cancel</a>
+</form>
