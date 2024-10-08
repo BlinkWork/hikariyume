@@ -372,13 +372,20 @@ namespace Webclient.Controllers
 
         public async Task<IActionResult> DetailOrder(int id)
         {
-            var order = await _context.Orders.Include(o => o.User).FirstOrDefaultAsync(o => o.OrderId == id);
+            var order = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product) // Thêm thông tin sản phẩm vào OrderItem
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
             if (order == null)
             {
                 return NotFound();
             }
+
             return View(order);
         }
+
 
         [HttpPost, ActionName("DeleteOrder")]
         public async Task<IActionResult> DeleteOrderConfirmed(int id)

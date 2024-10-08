@@ -13,5 +13,32 @@
     <p>Created At: @Model.CreatedAt?.ToString("g")</p>
 </div>
 
+<h3>Order Items</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderItems)
+        {
+            // Tính toán tổng giá và định dạng nó ngay trong vòng lặp
+            var total = ((decimal)item.Quantity * item.Price).ToString("C");
+            <tr>
+                <td>@item.Product?.Name</td>
+                <td>@item.Quantity</td>
+                <td>@item.Price.ToString("C")</td>
+                <td>@total</td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
 <a asp-action="EditOrder" asp-route-id="@Model.OrderId" class="btn btn-warning">Edit</a>
 <a asp-action="Order" class="btn btn-secondary">Back to Orders</a>
+

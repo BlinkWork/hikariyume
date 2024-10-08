@@ -35,8 +35,8 @@
     <div class="form-group">
         <label>Role</label>
         <select asp-for="Role" class="form-control">
-            <option value="Admin" selected="@(Model.Role == "Admin")">Admin</option>
-            <option value="User" selected="@(Model.Role == "User")">User</option>
+            <option value="admin" selected="@(Model.Role == "admin")">admin</option>
+            <option value="user" selected="@(Model.Role == "user")">user</option>
         </select>
         <span asp-validation-for="Role" class="text-danger"></span>
     </div>
