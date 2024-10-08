@@ -107,7 +107,7 @@ CREATE TABLE Wishlist (
 
 INSERT INTO Users (username, password, email, full_name, address, phone_number, role)
 VALUES 
-('admin', 'password1', 'admin@gom.vn', 'Admin', N'123 Gốm St', '0901234567', 'admin'),
+('admin', '$2a$13$niB5QUkWP/WD95mFguCNd.kdNDTAmDZ43hU/2SERjCtTk0sfeqky2', 'admin@gom.vn', 'Admin', N'123 Gốm St', '0901234567', 'admin'),
 ('user1', 'password2', 'user1@gom.vn', 'Nguyen Van A', N'456 Gốm St', '0907654321', 'user'),
 ('user2', 'password3', 'user2@gom.vn', 'Tran Thi B', N'789 Gốm St', '0912345678', 'user');
 

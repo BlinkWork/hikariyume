@@ -16,12 +16,33 @@ namespace Webclient.Controllers
         HikariYumeContext context = new HikariYumeContext();
         public IActionResult Index()
         {
-            return View();
+            try
+            {
+                int userId = int.Parse(HttpContext.Session.GetString("UserId"));
+                User user = context.Users.FirstOrDefault(u => u.UserId == userId);
+                if (user == null)
+                {
+                    return RedirectToAction("Login");
+                }
+                UserChangeInformation userChangeInformation = new UserChangeInformation()
+                {
+                    UserId = userId,
+                    Address = user.Address,
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    PhoneNumber = user.PhoneNumber,
+                    Username = user.Username
+                };
+                return View("Infomration", userChangeInformation);
+            }
+            catch (ArgumentNullException)
+            {
+                return RedirectToAction("Login");
+            }
         }
 
         public IActionResult Login()
         {
-
             return View();
         }
         [HttpPost]
@@ -36,7 +57,7 @@ namespace Webclient.Controllers
                     return View();
                 }
 
-                if (loginModel.password != user.Password)
+                if (!BCrypt.Net.BCrypt.EnhancedVerify(loginModel.password, user.Password))
                 {
                     ModelState.AddModelError("password", "Mật khẩu không chính xác");
                     return View();
@@ -88,11 +109,29 @@ namespace Webclient.Controllers
                 Subject = new ClaimsIdentity(new Claim[]
                 {
             new Claim("Email", user.Email),
-            new Claim("Password", user.Password),
+            new Claim("Password", BCrypt.Net.BCrypt.EnhancedHashPassword(user.Password,13)),
             new Claim("FullName", user.FullName),
             new Claim("Username", user.UserName),
             new Claim("PhoneNumber", user.PhoneNumber),
             new Claim("Address", user.Address)
+                }),
+                Expires = DateTime.UtcNow.AddMinutes(15),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+        private string GeneratePwdChange(string email)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("my_secret_key_hehehe_by_me_quan_32_ky_tu_cc");
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+            new Claim("Email",email),
+            new Claim("ChangePwd", "true"),
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(15),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -121,7 +160,51 @@ namespace Webclient.Controllers
 
             smtpServer.Send(mail);
         }
+        private void SendChangePwdEmail(string email, string token)
+        {
+            string verificationLink = Url.Action("VerifyChangePwd", "Account", new { token = token }, Request.Scheme);
 
+            MailMessage mail = new MailMessage();
+            mail.From = new MailAddress("quannmhe171875@fpt.edu.vn");
+            mail.To.Add(email);
+            mail.Subject = "Xác thực thay đổi mật khẩu";
+            mail.Body = $"Nhấn vào link để xác thực: <a href='{verificationLink}'>Thay đổi mật khẩu</a>";
+            mail.IsBodyHtml = true;
+
+            SmtpClient smtpServer = new SmtpClient("smtp.gmail.com");
+            smtpServer.Port = 587;
+            smtpServer.Credentials = new NetworkCredential(
+                                            "quannmhe171875@fpt.edu.vn",
+                                            Environment.GetEnvironmentVariable("GMAIL_PASSWORD"));
+            smtpServer.EnableSsl = true;
+
+            smtpServer.Send(mail);
+        }
+        [HttpGet]
+        public IActionResult VerifyChangePwd(string token)
+        {
+            var userClaims = ValidateJwtToken(token);
+
+            if (userClaims == null)
+            {
+                TempData["isPwdChange"] = false;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            User newUser = context.Users.FirstOrDefault(u => u.Email.Equals(userClaims.FindFirst("Email").Value));
+            if (newUser == null)
+            {
+                Console.WriteLine("87654321");
+                TempData["isPwdChange"] = false;
+                return RedirectToAction("Index", "Home");
+
+            }
+
+            ViewData["Email"] = userClaims.FindFirst("Email").Value.ToString();
+
+            return View("ChangePasswordWT");
+        }
 
         [HttpGet]
         public IActionResult VerifyEmail(string token)
@@ -153,6 +236,94 @@ namespace Webclient.Controllers
             return View("Login");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RequestForgetPassword(String email)
+        {
+            if (!context.Users.Any(u => u.Email == email))
+            {
+                ViewData["Error"] = "Email không gắn với bất kì tài khoản nào";
+                return View("ForgetPassword");
+            }
+
+            string emailVerificationToken = GeneratePwdChange(email);
+
+            SendChangePwdEmail(email, emailVerificationToken);
+
+            ViewData["Information"] = "Đã gửi thành công vào email của bạn link thay đổi mật khẩu";
+            return View("ForgetPassword");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangePassword()
+        {
+            try
+            {
+                ViewData["Email"] = HttpContext.Session.GetString("UserEmail");
+                return View();
+            }
+            catch
+            {
+                return RedirectToAction("Login");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel item)
+        {
+            try
+            {
+                User user = context.Users.FirstOrDefault(u => u.Email.Equals(item.Email));
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                if (user.Password.Length < 6)
+                {
+                    return BadRequest("mật khẩu chưa dài hơn 6 ký tự.");
+                }
+                user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(item.Password, 13);
+                context.Update(user);
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ChangePasswordFromOld([FromBody] ChangeOldPasswordModel item)
+        {
+            try
+            {
+                User user = context.Users.FirstOrDefault(u => u.Email.Equals(item.Email));
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                if (!BCrypt.Net.BCrypt.EnhancedVerify(item.OldPassword, user.Password))
+                {
+                    return BadRequest("mật khẩu cũ không đúng.");
+                }
+
+                if (item.Password.Length < 6)
+                {
+                    return BadRequest("mật khẩu chưa dài hơn 6 ký tự.");
+                }
+
+                user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(item.Password, 13);
+                context.Update(user);
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
         private ClaimsPrincipal ValidateJwtToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -171,13 +342,11 @@ namespace Webclient.Controllers
 
                 return principal;
             }
-            catch
+            catch (Exception e)
             {
                 return null;
             }
         }
-
-
 
         public IActionResult Cart()
         {
@@ -431,6 +600,11 @@ namespace Webclient.Controllers
             {
                 return NotFound("Không tìm thấy người dùng");
             }
+        }
+        [HttpGet]
+        public async Task<IActionResult> ForgetPassword()
+        {
+            return View();
         }
     }
 }

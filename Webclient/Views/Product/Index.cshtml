@@ -25,6 +25,11 @@
         padding: 40px 0;
         margin-bottom: 30px;
     }
+
+    .out-of-stock {
+        color: gray;
+        opacity: 50%;
+    }
 </style>
 <header class="category-header">
     <div class="container">
@@ -44,7 +49,8 @@
             @if (categoryId == -1)
             {
                 <option selected value="-1">Tất cả</option>
-            } else
+            }
+            else
             {
                 <option value="-1">Tất cả</option>
             }
@@ -52,15 +58,17 @@
             @if (categoryId == 1)
             {
                 <option selected value="1">Bát</option>
-            } else
-            {                
+            }
+            else
+            {
                 <option value="1">Bát</option>
             }
 
             @if (categoryId == 2)
             {
                 <option selected value="2">Đĩa</option>
-            } else
+            }
+            else
             {
                 <option value="2">Đĩa</option>
             }
@@ -68,7 +76,8 @@
             @if (categoryId == 3)
             {
                 <option selected value="3">Cốc</option>
-            } else
+            }
+            else
             {
                 <option value="3">Cốc</option>
             }
@@ -76,53 +85,59 @@
             @if (categoryId == 4)
             {
                 <option selected value="4">Bộ</option>
-            } else
+            }
+            else
             {
                 <option value="4">Bộ</option>
             }
         </select>
-         <select onchange="directIntoNewPage(this.value);" class="form-select d-inline-block w-auto ml-3">
+        <select onchange="directIntoNewPage(this.value);" class="form-select d-inline-block w-auto ml-3">
             @if (option.Equals("default"))
             {
-            <option selected value="default">Sắp xếp theo mặc định</option>
-            } else
+                <option selected value="default">Sắp xếp theo mặc định</option>
+            }
+            else
             {
-            <option value="default">Sắp xếp theo mặc định</option>
+                <option value="default">Sắp xếp theo mặc định</option>
             }
 
             @if (option.Equals("asc"))
             {
-            <option selected value="asc">Giá: Thấp đến cao</option>
-            } else
+                <option selected value="asc">Giá: Thấp đến cao</option>
+            }
+            else
             {
-            <option value="asc">Giá: Thấp đến cao</option>
+                <option value="asc">Giá: Thấp đến cao</option>
             }
 
             @if (option.Equals("desc"))
             {
                 <option selected value="desc">Giá: Cao đến thấp</option>
-            } else
+            }
+            else
             {
-            <option value="desc">Giá: Cao đến thấp</option>
+                <option value="desc">Giá: Cao đến thấp</option>
             }
 
             @if (option.Equals("new"))
             {
-            <option selected value="new">Mới nhất</option>
-                
-            } else
+                <option selected value="new">Mới nhất</option>
+
+            }
+            else
             {
-            <option value="new">Mới nhất</option>
-                
+                <option value="new">Mới nhất</option>
+
             }
             @if (option.Equals("old"))
             {
-                
-            <option selected value="old">Cũ nhất</option>
-            } else
+
+                <option selected value="old">Cũ nhất</option>
+            }
+            else
             {
-            <option value="old">Cũ nhất</option>
-                
+                <option value="old">Cũ nhất</option>
+
             }
         </select>
     </div>
@@ -132,7 +147,7 @@
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     @foreach (Product product in Model)
     {
-        <div class="col">
+        <div class="col @(product.StockQuantity == 0 ? "out-of-stock" : "")">
             <div class="card product-card h-100">
                 <img src="/img/@product.Image" class="card-img-top product-image" alt="Bát cơm gốm">
                 <div class="card-body">

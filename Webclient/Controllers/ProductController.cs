@@ -38,7 +38,7 @@ namespace Webclient.Controllers
             {
                 ViewData["categoryId"] = categoryId;
             }
-            List<Product> products = context.Products.ToList();
+            List<Product> products = context.Products.OrderByDescending(m => m.StockQuantity).ToList();
             if (categoryId != null)
             {
                 products = products.Where(p => p.CategoryId == categoryId).ToList();

@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Hikari Yumi - Japanese Tableware";
     List<Product> list = (List<Product>)ViewData["list"];
+    bool? changePwd = (ViewData["isChangeSuccess"] != null ? (bool)ViewData["isChangeSuccess"] : null);
 }
 
 <style>
@@ -232,3 +233,16 @@
         </div>
     </div>
 </section>
+
+
+<script>
+    let isChangeSuccess = @(changePwd == null ? "0" : (changePwd.GetValueOrDefault() ? "1" : "2"));
+
+    if (isChangeSuccess == "1") {
+        console.log("hehe");
+        toastr.success('Thay đổi mật khẩu thành công!', 'Thành công');
+    } else if (isChangeSuccess == "2") {
+        console.log("haha");
+        toastr.error("Token không hợp lệ hoặc đã hết thời hạn.");
+    }
+</script>

@@ -16,7 +16,12 @@ namespace Webclient.Controllers
 
         public IActionResult Index()
         {
-            var list = context.Products.OrderBy(p => p.CreatedAt).Take(3).ToList();
+            var list = context.Products.Where(p => p.StockQuantity > 0).OrderBy(p => p.CreatedAt).Take(3).ToList();
+            bool? isPwdChange = TempData["isPwdChange"] != null ? (bool)TempData["isPwdChange"] : null;
+            if (isPwdChange != null)
+            {
+                ViewData["isChangeSuccess"] = isPwdChange;
+            }
             ViewData["list"] = list;
             return View();
         }

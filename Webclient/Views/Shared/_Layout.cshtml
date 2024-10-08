@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <style>
         html, body {
             height: 100% !important;
@@ -82,20 +83,19 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-
     </style>
 </head>
 <body>
     <!-- Header -->
     <header class="border-bottom">
         <div class="container py-4 d-flex justify-content-between align-items-center">
-                <a href="/Home" class="fs-4 fw-semibold">
-                    <img src="/img/exeLogo.png" width="64" height="64" />光夢 <span class="text-danger">Hiraki Yume</span>
-                </a>
+            <a href="/Home" class="fs-4 fw-semibold">
+                <img src="/img/exeLogo.png" width="64" height="64" />光夢 <span class="text-danger">Hiraki Yume</span>
+            </a>
             @* <nav class="d-none d-md-flex gap-3">
-                <a href="/Product?categoryId=1" class="text-dark text-decoration-none">Bát</a>
-                <a href="/Product?categoryId=2" class="text-dark text-decoration-none">Đĩa</a>
-                <a href="/Product?categoryId=3" class="text-dark text-decoration-none">Cốc</a>
+            <a href="/Product?categoryId=1" class="text-dark text-decoration-none">Bát</a>
+            <a href="/Product?categoryId=2" class="text-dark text-decoration-none">Đĩa</a>
+            <a href="/Product?categoryId=3" class="text-dark text-decoration-none">Cốc</a>
             </nav> *@
             <div class="d-flex gap-3">
                 <div class="search-container position-relative">
@@ -105,7 +105,8 @@
                 @if (id == null)
                 {
                     <button onclick="location.href = '/Account/Login';" class="btn btn-outline-secondary p-2"><i class="bi bi-person-circle"></i></button>
-                } else
+                }
+                else
                 {
                     <a href="/Account/Cart" class="btn btn-outline-secondary p-2"><i class="bi bi-cart"></i></a>
                     <div class="dropdown">
@@ -115,6 +116,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                             <li><a class="dropdown-item" href="/Account/Information">Thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item" href="/Account/ChangePassword">Đổi mật khẩu</a></li>
                             <li><a class="dropdown-item" href="/Account/History">Lịch sử</a></li>
                             <li><a class="dropdown-item" href="/Account/Logout">Thoát</a></li>
                         </ul>
@@ -139,7 +141,7 @@
                     <h5>Liên kết</h5>
                     <ul class="list-unstyled">
                         <li><a href="#" class="text-light text-decoration-none">Câu chuyện của chúng tôi</a></li>
-                       @*  <li><a href="#" class="text-light text-decoration-none">Shipping & Returns</a></li> *@
+                        @*  <li><a href="#" class="text-light text-decoration-none">Shipping & Returns</a></li> *@
                         <li><a href="#" class="text-light text-decoration-none">FAQs</a></li>
                         <li><a href="https://www.facebook.com/profile.php?id=100064701547468" class="text-light text-decoration-none">Liên hệ</a></li>
                     </ul>
@@ -157,12 +159,11 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         document.getElementById('searchButton').addEventListener('click', function () {
             const searchContainer = document.querySelector('.search-container');
             searchContainer.classList.toggle('open');
-            document.getElementById('searchInput').focus(); 
+            document.getElementById('searchInput').focus();
         });
 
         document.getElementById('searchInput').addEventListener('keypress', function (e) {
@@ -178,7 +179,7 @@
             const searchContainer = document.querySelector('.search-container');
             if (!searchContainer.contains(e.target)) {
                 searchContainer.classList.remove('open');
-                document.getElementById('searchInput').value = ''; 
+                document.getElementById('searchInput').value = '';
             }
         });
 
