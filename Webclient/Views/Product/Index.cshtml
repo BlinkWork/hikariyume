@@ -178,7 +178,7 @@
         }
         else if (currentPage == maxPage)
         {
-            @for (int index = maxPage - 3; index < maxPage; index++)
+            @for (int index = Math.Max(maxPage - 3, 1); index < maxPage; index++)
             {
                 <li class="page-item"><a class="page-link" onclick="GoTo(@index)" href="#">@index</a></li>
             }
@@ -186,7 +186,7 @@
                 <a class="page-link" href="#">@maxPage</a>
             </li>
         }
-        else
+        else if (currentPage > 0)
         {
             <li class="page-item"><a class="page-link" onclick="GoTo(@(currentPage-1)" href="#">@(currentPage - 1)</a></li>
 
@@ -239,6 +239,9 @@
         window.location.href = newUrl;
     }
     function GoTo(pageNumber) {
+        if (parseInt(pageNumber) <= 0) {
+            return;
+        }
         let newUrl = `/Product?categoryId=@(categoryId == -1 ? "" : categoryId)&option=@option&search=@search&page=${pageNumber}`;
         window.location.href = newUrl;
     }

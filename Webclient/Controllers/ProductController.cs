@@ -10,6 +10,10 @@ namespace Webclient.Controllers
         HikariYumeContext context = new HikariYumeContext();
         public IActionResult Index(string search, int? categoryId, int page = 1, string option = "default")
         {
+            if (page <= 0)
+            {
+                return Index(search, categoryId, 1, "default");
+            }
             switch (categoryId)
             {
                 case 1:

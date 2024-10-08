@@ -174,7 +174,7 @@ else
             }
             else if (currentPage == maxPage)
             {
-                @for (int index = maxPage - 5; index < maxPage; index++)
+                @for (int index = Math.Max(maxPage - 5, 1); index < maxPage; index++)
                 {
                     <li class="page-item"><a class="page-link" onclick="GoTo(@index)" href="#">@index</a></li>
                 }
@@ -182,7 +182,7 @@ else
                     <a class="page-link" href="#">@maxPage</a>
                 </li>
             }
-            else
+            else if (currentPage > 0)
             {
                 <li class="page-item"><a class="page-link" onclick="GoTo(@(currentPage-1)" href="#">@(currentPage - 1)</a></li>
 
@@ -267,6 +267,9 @@ else
         window.location.href = newUrl;
     }
     function GoTo(pageNumber) {
+        if (parseInt(pageNumber <= 0) {
+            return;
+        }
         let newUrl = `/History?page=${pageNumber}`;
         window.location.href = newUrl;
     }

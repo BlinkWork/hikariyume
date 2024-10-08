@@ -497,6 +497,11 @@ namespace Webclient.Controllers
         {
             try
             {
+                if (page <= 0)
+                {
+                    return await History(1);
+                }
+
                 int userId = int.Parse(HttpContext.Session.GetString("UserId"));
 
                 var list = context.Orders
