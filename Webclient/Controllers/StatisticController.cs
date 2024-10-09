@@ -85,9 +85,14 @@ namespace Webclient.Controllers
                 {
                     var fileName = Path.GetFileNameWithoutExtension(ImageFile.FileName);
                     var extension = Path.GetExtension(ImageFile.FileName);
-                    var newFileName = $"{fileName}_{DateTime.Now.Ticks}{extension}";
 
-                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", newFileName);
+                    fileName = fileName.Replace(" ", "_");
+
+                    var newFileName = $"{fileName}_{DateTime.Now.Ticks}{extension}";
+                    var encodedFileName = Uri.EscapeDataString(newFileName);
+
+
+                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", encodedFileName);
 
                     using (var stream = new FileStream(path, FileMode.Create))
                     {
