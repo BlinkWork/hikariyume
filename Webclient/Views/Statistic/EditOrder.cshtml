@@ -21,7 +21,12 @@
     </div>
     <div class="form-group">
         <label>Status</label>
-        <input asp-for="Status" class="form-control" />
+        <select asp-for="Status" class="form-control">
+            <option value="Đang chờ" selected="@(Model.Status == "Đang chờ")">Đang chờ</option>
+            <option value="Đang giao" selected="@(Model.Status == "Đang giao")">Đang giao</option>
+            <option value="Hoàn thành" selected="@(Model.Status == "Hoàn thành")">Hoàn thành</option>
+            <option value="Bị hủy" selected="@(Model.Status == "Bị hủy")">Bị hủy</option>
+        </select>
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
     <a asp-action="Order" class="btn btn-secondary">Cancel</a>

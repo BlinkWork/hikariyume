@@ -360,12 +360,38 @@ namespace Webclient.Controllers
                 return BadRequest();
             }
 
+            var existingOrder = await _context.Orders.FindAsync(id);
+            if (existingOrder == null)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
-                _context.Entry(order).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Order));
+                existingOrder.UserId = order.UserId;
+                existingOrder.TotalPrice = order.TotalPrice;
+                existingOrder.Address = order.Address;
+                existingOrder.Status = order.Status;
+
+                try
+                {
+                    _context.Update(existingOrder);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Order));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Orders.Any(o => o.OrderId == id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
+
             ViewBag.Users = _context.Users.ToList();
             return View(order);
         }
